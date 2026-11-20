@@ -38,6 +38,15 @@ The bots never ban anyone for what they post. That stays your call.
 - It gives you a public IPv4 address and lets you open ports 80, 443, 7881 and 7882.
 - It runs Ubuntu 24.04 or Debian 12/13.
 
+### Running it at home instead (cheapest)
+
+A spare computer with 8 GB of memory, or a Raspberry Pi 5 with 8 GB, runs Fluxer for the price of a domain and some electricity. No hosting company's content rules apply. Install Ubuntu 24.04 or Raspberry Pi OS (64-bit) on it, then follow the steps below with these changes:
+
+- **Reaching it from outside:** in your router, forward TCP ports 80, 443 and 7881 and UDP ports 443 and 7882 to the machine. Give it a fixed local IP in the router's settings so the forwarding keeps working.
+- **Home IP addresses change.** Use a domain or DNS service with dynamic DNS (for example Cloudflare DNS with `ddclient`, or Duck DNS), so your domain follows your home IP.
+- **Can't forward ports** (some internet providers block it): install with `--behind-proxy` and use Cloudflare Tunnel, as the [Fluxer docs](https://docs.fluxer.com/operator/#without-a-public-ip-address) explain. Text, images and video work, but voice calls need a separate cheap server for relaying them.
+- Keep the machine plugged in and on. Off-site backups (`OFFSITE_REMOTE`) matter more at home, in case the disk dies.
+
 ## Setting it up (about 30 minutes)
 
 1. **Rent the server** with Ubuntu 24.04. Note its IP address.
