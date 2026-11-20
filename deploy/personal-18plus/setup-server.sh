@@ -34,6 +34,24 @@ ufw allow 7881/tcp
 ufw allow 7882/udp
 ufw --force enable
 
+# Small machines (like a 4 GB Raspberry Pi): add swap and use Fluxer's small
+# memory profile so it fits. Bigger machines skip this.
+mem_mb=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)
+small_flags=""
+if [ "$mem_mb" -lt 6000 ]; then
+	echo "==> Only ${mem_mb} MB of memory: adding 4 GB of swap and using the small profile"
+	if ! swapon --show | grep -q /swapfile; then
+		fallocate -l 4G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=4096
+		chmod 600 /swapfile
+		mkswap /swapfile
+		swapon /swapfile
+		grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+	fi
+	sysctl -w vm.swappiness=10 >/dev/null
+	echo 'vm.swappiness=10' > /etc/sysctl.d/90-fluxer-swap.conf
+	small_flags="--memory-profile small"
+fi
+
 echo "==> Installing Fluxer with rexctl (it will ask you a few questions)"
 # registration=approval: anyone can ask to join, nobody gets in until approved.
 # The age-gate bot (install-bots.sh) turns away anyone who says they are under 18.
@@ -41,7 +59,14 @@ curl -fsSL https://fluxer.dev/install.sh | sh -s -- install \
 	--domain "$domain" \
 	--registration approval \
 	--sign-in email \
-	--boot-service on
+	--boot-service on \
+	$small_flags
+
+if [ -n "$small_flags" ]; then
+	# Run background jobs inside the api service: one less service in memory.
+	rexctl config set FLUXER_API_EMBEDDED_WORKER true
+	rexctl doctor --fix --yes || true
+fi
 
 echo "==> Keeping 7 backups on this machine"
 rexctl backup keep 7

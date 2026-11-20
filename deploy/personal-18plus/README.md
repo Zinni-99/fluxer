@@ -45,6 +45,7 @@ A spare computer with 8 GB of memory, or a Raspberry Pi 5 with 8 GB, runs Fluxer
 - **Reaching it from outside:** in your router, forward TCP ports 80, 443 and 7881 and UDP ports 443 and 7882 to the machine. Give it a fixed local IP in the router's settings so the forwarding keeps working.
 - **Home IP addresses change.** Use a domain or DNS service with dynamic DNS (for example Cloudflare DNS with `ddclient`, or Duck DNS), so your domain follows your home IP.
 - **Can't forward ports** (some internet providers block it): install with `--behind-proxy` and use Cloudflare Tunnel, as the [Fluxer docs](https://docs.fluxer.com/operator/#without-a-public-ip-address) explain. Text, images and video work, but voice calls need a separate cheap server for relaying them.
+- **On a 4 GB Raspberry Pi** (a Pi 4 or Pi 5): `setup-server.sh` notices the small memory and adds 4 GB of swap, uses Fluxer's small memory profile and runs background jobs inside the API to save memory. 4 GB is Fluxer's minimum, so it's fine for a small group (roughly 5–20 people) but can feel slow at busy moments, and video calls with several people at once may struggle. Use a USB SSD rather than the SD card: SD cards are slow for a database and wear out.
 - Keep the machine plugged in and on. Off-site backups (`OFFSITE_REMOTE`) matter more at home, in case the disk dies.
 
 ## Setting it up (about 30 minutes)
