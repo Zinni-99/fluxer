@@ -1,0 +1,9 @@
+[Unit]
+Description=Copy Fluxer backups off this server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/fluxer-caretaker/offsite-backup.sh
+EnvironmentFile=-/etc/fluxer-caretaker.env

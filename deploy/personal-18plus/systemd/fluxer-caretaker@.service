@@ -1,0 +1,10 @@
+[Unit]
+Description=Fluxer caretaker: %i
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/fluxer-caretaker/caretaker.py %i
+EnvironmentFile=-/etc/fluxer-caretaker.env
+StateDirectory=fluxer-caretaker
