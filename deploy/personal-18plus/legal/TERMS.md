@@ -1,8 +1,8 @@
-# Terms of use
+# Z's Place: terms of use
 
 _Last updated: <!-- DATE -->_
 
-These terms apply to the private chat server at **<!-- YOUR DOMAIN -->** ("the server"), run by **<!-- YOUR NAME OR HANDLE -->** ("we", "the admins").
+These terms apply to **Z's Place**, the private chat server at **<!-- YOUR DOMAIN -->** ("the server"), run by **<!-- YOUR NAME OR HANDLE -->** ("we", "the admins").
 
 > This template is a starting point, not legal advice. Laws about adult content and age checks differ by country and US state. Have it checked if you open the server to the public.
 
