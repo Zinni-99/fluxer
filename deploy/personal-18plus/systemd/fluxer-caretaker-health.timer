@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Fluxer caretaker health on a schedule
+
+[Timer]
+OnCalendar=*-*-* *:0/10:00
+Persistent=true
+Unit=fluxer-caretaker@health.service
+
+[Install]
+WantedBy=timers.target
