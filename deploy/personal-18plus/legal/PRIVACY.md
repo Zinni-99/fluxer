@@ -2,7 +2,7 @@
 
 _Last updated: <!-- DATE -->_
 
-Z's Place (**<!-- YOUR DOMAIN -->**) is run privately by **<!-- YOUR NAME OR HANDLE -->**. It runs Fluxer, open-source software, on a server we rent. No advertising, no tracking, and we don't sell data.
+Z's Place (**zsplace.site**) is run privately by **<!-- YOUR NAME OR HANDLE -->**. It runs Fluxer, open-source software, on a server we rent. No advertising, no tracking, and we don't sell data.
 
 ## What we store
 - **Account details:** username, email address, password (stored scrambled, never in plain text) and date of birth. The date of birth is only used to check that you're 18 or older.
