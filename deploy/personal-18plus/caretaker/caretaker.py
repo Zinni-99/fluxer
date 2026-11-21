@@ -99,7 +99,11 @@ def http(method: str, url: str, body: dict | None = None, headers: dict | None =
     ctx = ssl.create_default_context()
     with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
         raw = resp.read()
-        return resp.status, (json.loads(raw) if raw else None)
+        if not raw:
+            return resp.status, None
+        if "json" in (resp.headers.get("Content-Type") or ""):
+            return resp.status, json.loads(raw)
+        return resp.status, raw.decode(errors="replace")
 
 
 def admin(method: str, path: str, body: dict | None = None, reason: str | None = None):
