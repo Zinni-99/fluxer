@@ -103,7 +103,7 @@ journalctl -u 'fluxer-caretaker@*' --since today   # what the bots did
 
 ## Badges
 
-The kit comes with 14 profile badges (Peach Fuzz, Brat Energy, OG Z and more) in
+The kit comes with 14 profile badges (Peach Fuzz, Brat Energy, OG Porchlite and more) in
 [`branding/badges/`](branding/badges/). Like staff badges, members can't pick them
 themselves; you or the badge bot hand them out.
 
@@ -114,7 +114,7 @@ themselves; you or the badge bot hand them out.
 The rules:
 
 - **Peach Fuzz** for the first `BADGE_PEACH_FUZZ_DAYS` days (14 by default) after someone joins.
-- **OG Z** for good, for everyone who joined before `BADGE_OG_BEFORE`.
+- **OG Porchlite** for good, for everyone who joined before `BADGE_OG_BEFORE`.
 - **Every other badge** follows a server role with the same name. Make roles such as
   "Brat Energy" or "Hype Fairy" and put them in a role picker, or give them by hand,
   and the badge comes and goes with the role.
