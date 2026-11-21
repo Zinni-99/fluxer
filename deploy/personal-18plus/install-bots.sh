@@ -43,7 +43,7 @@ python3 /opt/fluxer-caretaker/caretaker.py apply-settings
 if [ -f "$here/branding/zsplace-logo-512.png" ]; then
 	echo "==> Applying the logo, icon and colour"
 	rexctl branding set \
-		--name "${INSTANCE_NAME:-Z's Place}" \
+		--name "${INSTANCE_NAME:-Porchlite}" \
 		--colour "${BRAND_COLOR:-#FF4FA0}" \
 		--logo "$here/branding/zsplace-logo-512.png" \
 		--icon "$here/branding/zsplace-favicon-512.png" || echo "Branding failed; you can upload it in /admin instead."

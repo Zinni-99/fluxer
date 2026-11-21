@@ -1,4 +1,4 @@
-# Z's Place: personal adults-only Fluxer server
+# Porchlite: personal adults-only Fluxer server
 
 Everything you need to run your own private, 18+ Fluxer server, plus small bots that look after it. It uses the official installer (`rexctl`) for the hard parts, so you never have to touch Docker files.
 

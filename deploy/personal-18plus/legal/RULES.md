@@ -1,4 +1,4 @@
-# Z's Place: community rules
+# Porchlite: community rules
 
 This is a private, adults-only (18+) server. Joining means you agree to these rules. Breaking them can get you removed without warning.
 

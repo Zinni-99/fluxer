@@ -10,7 +10,7 @@ server with no pip installs. Settings come from /etc/fluxer-caretaker.env
   age-gate        Review people waiting for approval and enforce the minimum age.
   reports         Notify the owner about new reports (child-safety ones flagged urgent).
   health          Check rexctl status, the public URL and free disk space.
-  badges-setup    Upload the Z's Place badge images as user badges (safe to re-run).
+  badges-setup    Upload the Porchlite badge images as user badges (safe to re-run).
   badges          Hand out and take back badges automatically (see BADGE_* settings).
   test-notify     Send a test notification.
   alert           Send a custom notification.
