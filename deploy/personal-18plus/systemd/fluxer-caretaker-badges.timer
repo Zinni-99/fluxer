@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Fluxer caretaker badges on a schedule
+
+[Timer]
+OnCalendar=*-*-* *:0/15:00
+Persistent=true
+Unit=fluxer-caretaker@badges.service
+
+[Install]
+WantedBy=timers.target

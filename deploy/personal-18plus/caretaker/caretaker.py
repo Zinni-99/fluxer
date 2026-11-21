@@ -10,6 +10,8 @@ server with no pip installs. Settings come from /etc/fluxer-caretaker.env
   age-gate        Review people waiting for approval and enforce the minimum age.
   reports         Notify the owner about new reports (child-safety ones flagged urgent).
   health          Check rexctl status, the public URL and free disk space.
+  badges-setup    Upload the Z's Place badge images as user badges (safe to re-run).
+  badges          Hand out and take back badges automatically (see BADGE_* settings).
   test-notify     Send a test notification.
   alert           Send a custom notification.
 
@@ -20,6 +22,8 @@ configure. Nothing here bans people for what they post; that stays a human call.
 from __future__ import annotations
 
 import argparse
+import base64
+import re
 import datetime as dt
 import json
 import os
@@ -302,6 +306,154 @@ def cmd_health(_: argparse.Namespace) -> None:
     print("healthy")
 
 
+# --------------------------------------------------------------------------- badges
+
+BADGE_DIR = Path(os.environ.get("CARETAKER_BADGES", "/opt/fluxer-caretaker/badges"))
+
+# slug (image file name), badge name, hover text, extra role names that also earn it
+BADGES = [
+    ("peach-fuzz", "Peach Fuzz", "New member, fresh and fuzzy", []),
+    ("thirst-trap", "Thirst Trap Certified", "Officially too hot to handle", ["Thirst Trap"]),
+    ("professional-yapper", "Professional Yapper", "Has never sent a short message", ["Yapper"]),
+    ("after-dark", "After Dark", "Most active after midnight", []),
+    ("menace", "Menace", "Chaos with a smile", []),
+    ("brat-energy", "Brat Energy", "Make me (politely)", ["Brat"]),
+    ("soft-dom", "Soft Dom(me)", "In charge, but make it cuddly", ["Soft Dom", "Soft Domme"]),
+    ("switch-witch", "Switch Witch", "Goes both ways on who's in charge", ["Switch"]),
+    ("innocent-allegedly", "Innocent (Allegedly)", "Halo slightly crooked", ["Innocent"]),
+    ("flirt-licensed", "Flirt Licensed", "Certified smooth talker", ["Flirt"]),
+    ("consent-royalty", "Consent Queen / King", "Asks first, every time",
+     ["Consent Queen", "Consent King", "Consent Royalty"]),
+    ("hype-fairy", "Hype Fairy", "Your biggest cheerleader", []),
+    ("snack", "Snack", "Looking delicious today", []),
+    ("og-z", "OG Z", "Here since day one", []),
+]
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def list_user_badges() -> dict[str, str]:
+    """Return {badge name: badge id} for every user badge on the instance."""
+    found: dict[str, str] = {}
+    after = None
+    while True:
+        query = "/badges?type=user&limit=200" + (f"&after={after}" if after else "")
+        page = admin("GET", query) or {}
+        for badge in page.get("badges", []):
+            if badge.get("type", "user") == "user":
+                found[badge["name"]] = str(badge["id"])
+        after = page.get("next")
+        if not after:
+            return found
+
+
+def cmd_badges_setup(_: argparse.Namespace) -> None:
+    existing = list_user_badges()
+    for slug, name, description, _aliases in BADGES:
+        image = BADGE_DIR / f"{slug}.png"
+        if name in existing:
+            print(f"{name}: already there")
+            continue
+        if not image.exists():
+            print(f"{name}: skipped, {image} is missing")
+            continue
+        data_url = "data:image/png;base64," + base64.b64encode(image.read_bytes()).decode()
+        made = admin("POST", "/badges", {"type": "user", "name": name, "href": None, "image": data_url},
+                     reason="caretaker: badges-setup")
+        admin("PATCH", f"/badges/{made['id']}", {"name": name, "description": description, "href": None},
+              reason="caretaker: badges-setup")
+        print(f"{name}: created")
+
+
+def _get_user(uid: str) -> dict:
+    payload = admin("GET", f"/users/{uid}") or {}
+    if "users" in payload:
+        return (payload["users"] or [{}])[0]
+    return payload.get("user", payload)
+
+
+def _guild_members(guild_id: str) -> list[dict]:
+    members: list[dict] = []
+    offset = 0
+    while True:
+        page = (admin("GET", f"/guilds/{guild_id}/members?limit=200&offset={offset}") or {}).get("members", [])
+        members.extend(page)
+        if len(page) < 200:
+            return members
+        offset += 200
+
+
+def cmd_badges(_: argparse.Namespace) -> None:
+    """Keep badges in step with the rules:
+
+    - Peach Fuzz while someone joined the server less than BADGE_PEACH_FUZZ_DAYS ago.
+    - OG Z for everyone who joined before BADGE_OG_BEFORE (kept for good).
+    - Any other badge while the member has a server role with the same name
+      (for example a "Brat Energy" role, from a role picker or given by a mod).
+
+    Badges you hand out yourself in the admin panel are never taken away; the bot
+    only removes a badge it gave out.
+    """
+    guild_id = cfg("BADGE_GUILD_ID")
+    fuzz_days = int(CFG.get("BADGE_PEACH_FUZZ_DAYS", "14") or 0)
+    og_before = CFG.get("BADGE_OG_BEFORE", "").strip()
+    og_cutoff = dt.date.fromisoformat(og_before) if og_before else None
+    today = dt.datetime.now(dt.timezone.utc)
+
+    ids = list_user_badges()
+    missing = [name for _, name, _, _ in BADGES if name not in ids]
+    if missing:
+        print("Not created yet (run badges-setup): " + ", ".join(missing))
+
+    guild = (admin("GET", f"/guilds/{guild_id}") or {}).get("guild") or {}
+    role_names = {str(r["id"]): _norm(r.get("name", "")) for r in guild.get("roles", [])}
+    by_role: dict[str, str] = {}
+    for _, name, _, aliases in BADGES:
+        if name in ("Peach Fuzz", "OG Z") or name not in ids:
+            continue
+        for label in [name, *aliases]:
+            by_role[_norm(label)] = ids[name]
+
+    state = load_state("badges")
+    given: dict[str, list[str]] = state.setdefault("given", {})
+    changes = 0
+    for member in _guild_members(guild_id):
+        user = member.get("user") or {}
+        uid = str(user.get("id", ""))
+        if not uid or user.get("bot"):
+            continue
+        joined = dt.datetime.fromisoformat(member["joined_at"].replace("Z", "+00:00"))
+        want: set[str] = set()
+        if "Peach Fuzz" in ids and fuzz_days and (today - joined).days < fuzz_days:
+            want.add(ids["Peach Fuzz"])
+        if "OG Z" in ids and og_cutoff and joined.date() < og_cutoff:
+            want.add(ids["OG Z"])
+        for role_id in member.get("roles", []):
+            badge_id = by_role.get(role_names.get(str(role_id), ""))
+            if badge_id:
+                want.add(badge_id)
+
+        mine = set(given.get(uid, []))
+        keep_og = {ids["OG Z"]} & mine if "OG Z" in ids else set()
+        current = set(str(b) for b in (_get_user(uid).get("badge_ids") or []))
+        add = want - current
+        drop = (mine - want - keep_og) & current
+        if not add and not drop:
+            given[uid] = sorted(mine & current)
+            continue
+        new = sorted((current | add) - drop)
+        admin("PATCH", f"/users/{uid}/badges", {"badge_ids": new}, reason="caretaker: badge rules")
+        given[uid] = sorted((mine - drop) | add)
+        changes += 1
+        tag = user.get("global_name") or user.get("username") or uid
+        print(f"{tag}: +{len(add)} -{len(drop)} badges")
+    state["given"] = {k: v for k, v in given.items() if v}
+    save_state("badges", state)
+    print(f"Badges checked, {changes} member(s) updated.")
+
+
 def cmd_test_notify(_: argparse.Namespace) -> None:
     notify("Caretaker test", f"Notifications from {CFG.get('FLUXER_URL', 'your server')} work.")
 
@@ -323,6 +475,8 @@ def main() -> None:
         "age-gate": cmd_age_gate,
         "reports": cmd_reports,
         "health": cmd_health,
+        "badges-setup": cmd_badges_setup,
+        "badges": cmd_badges,
         "test-notify": cmd_test_notify,
     }.items():
         sub.add_parser(name).set_defaults(func=fn)

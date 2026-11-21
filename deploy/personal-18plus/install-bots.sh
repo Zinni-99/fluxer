@@ -27,6 +27,10 @@ echo "==> Installing the caretaker bots"
 install -d -m 0755 /opt/fluxer-caretaker
 install -m 0755 "$here/caretaker/caretaker.py" /opt/fluxer-caretaker/caretaker.py
 install -m 0755 "$here/caretaker/offsite-backup.sh" /opt/fluxer-caretaker/offsite-backup.sh
+if [ -d "$here/branding/badges" ]; then
+	install -d -m 0755 /opt/fluxer-caretaker/badges
+	install -m 0644 "$here"/branding/badges/*.png /opt/fluxer-caretaker/badges/
+fi
 install -m 0644 "$here"/systemd/*.service "$here"/systemd/*.timer /etc/systemd/system/
 systemctl daemon-reload
 
@@ -47,6 +51,14 @@ fi
 
 echo "==> Starting the age-gate, reports and health bots"
 systemctl enable --now fluxer-caretaker-age-gate.timer fluxer-caretaker-reports.timer fluxer-caretaker-health.timer
+
+if [ -n "${BADGE_GUILD_ID:-}" ]; then
+	echo "==> Uploading the badges and starting the badge bot"
+	python3 /opt/fluxer-caretaker/caretaker.py badges-setup || echo "Badge upload failed; check the API key permissions."
+	systemctl enable --now fluxer-caretaker-badges.timer
+else
+	echo "==> Badge bot skipped (BADGE_GUILD_ID is empty)"
+fi
 
 echo "==> Weekly automatic upgrades (Sunday 04:00), each with a backup first,"
 echo "    plus a full backup with uploads on the 1st of every month"

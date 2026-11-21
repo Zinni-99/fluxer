@@ -101,6 +101,27 @@ systemctl list-timers 'fluxer-*'    # when the bots run next
 journalctl -u 'fluxer-caretaker@*' --since today   # what the bots did
 ```
 
+## Badges
+
+The kit comes with 14 profile badges (Peach Fuzz, Brat Energy, OG Z and more) in
+[`branding/badges/`](branding/badges/). Like staff badges, members can't pick them
+themselves; you or the badge bot hand them out.
+
+1. Give the admin API key the badge permissions listed in `caretaker.env.example`.
+2. Set `BADGE_GUILD_ID` to your main community's ID, and optionally `BADGE_OG_BEFORE`.
+3. Run `sudo sh install-bots.sh` again. It uploads the badges and starts the bot, which checks every 15 minutes.
+
+The rules:
+
+- **Peach Fuzz** for the first `BADGE_PEACH_FUZZ_DAYS` days (14 by default) after someone joins.
+- **OG Z** for good, for everyone who joined before `BADGE_OG_BEFORE`.
+- **Every other badge** follows a server role with the same name. Make roles such as
+  "Brat Energy" or "Hype Fairy" and put them in a role picker, or give them by hand,
+  and the badge comes and goes with the role.
+
+You can still give any badge by hand in the admin panel (open the user, Badges tab).
+The bot never takes away a badge it didn't give.
+
 ## Files here
 
 | File | Purpose |
@@ -110,5 +131,6 @@ journalctl -u 'fluxer-caretaker@*' --since today   # what the bots did
 | `caretaker/caretaker.py` | The bots (Python standard library only) |
 | `caretaker/caretaker.env.example` | Settings for the bots |
 | `caretaker/offsite-backup.sh` | Daily copy of backups to cloud storage with rclone |
+| `branding/badges/` | Profile badge images used by the badge bot |
 | `systemd/` | Timers that run the bots |
 | `legal/` | Rules, terms and privacy templates |
