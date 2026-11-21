@@ -1,64 +1,104 @@
-/* Porchlite theme for Fluxer: warm lantern light on a night-sky purple,
-   softened a little so it's easy on the eyes.
+/* Porchlite theme for Fluxer, cottagecore edition.
+   Dark mode = "dusk garden" (moss, honey lantern light, linen text, dusty-rose links).
+   Light mode = "morning cottage" (cream linen, warm wood, honey, rose).
    Applied as the instance's custom CSS by "caretaker apply-settings".
-   Only the dark theme is changed; members who pick light mode keep Fluxer's light theme. */
+   No !important on purpose: this is the default look, and members can still
+   pick their own theme in Appearance, which loads after this and wins. */
+
 html.theme-dark {
-  /* surfaces, darkest to lightest */
-  --background-primary: #131027 !important;
-  --bg-primary: #131027 !important;
-  --background-secondary: #1d1936 !important;
-  --bg-secondary: #1d1936 !important;
-  --background-secondary-lighter: #221d3d !important;
-  --background-secondary-alt: #252041 !important;
-  --background-tertiary: #2b2546 !important;
-  --bg-tertiary: #2b2546 !important;
-  --background-textarea: #252041 !important;
-  --background-channel-header: #1d1936 !important;
-  --background-header-primary: #2b2546 !important;
-  --background-header-primary-hover: #3a335a !important;
-  --background-header-secondary: #2b2546 !important;
-  --form-surface-background: #2b2546 !important;
-  --bg-blockquote: #252041 !important;
-  --background-modifier-hover: rgba(234, 211, 156, 0.06) !important;
-  --bg-hover: rgba(234, 211, 156, 0.06) !important;
-  --background-modifier-selected: rgba(233, 163, 92, 0.14) !important;
-  --bg-active: rgba(233, 163, 92, 0.14) !important;
-  --background-modifier-accent: rgba(188, 176, 227, 0.16) !important;
-  --border-color: rgba(188, 176, 227, 0.18) !important;
-  --border-color-hover: rgba(188, 176, 227, 0.3) !important;
-  --border-color-focus: rgba(233, 163, 92, 0.55) !important;
-
-  /* brand: lantern amber, with dark text on top for readability */
-  --brand-primary: #e9a35c !important;
-  --brand-primary-foreground: #e9a35c !important;
-  --brand-primary-light: #ead39c !important;
-  --brand-primary-pressed: #c47a3c !important;
-  --brand-secondary: #c47a3c !important;
-  --brand-primary-fill: #1d1530 !important;
-  --text-on-brand-primary: #1d1530 !important;
-  --accent-primary: #e9a35c !important;
-  --button-primary-fill: #e9a35c !important;
-  --button-primary-active-fill: #c47a3c !important;
-  --button-primary-text: #1d1530 !important;
-
-  /* text: candle cream and lavender */
-  --text-primary: #ece6d6 !important;
-  --text-secondary: #ddd7c6 !important;
-  --text-primary-muted: #c4bed9 !important;
-  --text-tertiary: #a8a3c8 !important;
-  --text-link: #e3b77e !important;
-
-  --scrollbar-thumb-bg: rgba(188, 176, 227, 0.28) !important;
-  --scrollbar-thumb-bg-hover: rgba(188, 176, 227, 0.5) !important;
+  --background-primary: #171b15;
+  --bg-primary: #171b15;
+  --background-secondary: #1f251c;
+  --bg-secondary: #1f251c;
+  --background-secondary-lighter: #232a20;
+  --background-secondary-alt: #262e23;
+  --background-tertiary: #2d3529;
+  --bg-tertiary: #2d3529;
+  --background-textarea: #262e23;
+  --background-channel-header: #1f251c;
+  --background-header-primary: #2d3529;
+  --background-header-primary-hover: #3b4535;
+  --background-header-secondary: #2d3529;
+  --form-surface-background: #2d3529;
+  --bg-blockquote: #262e23;
+  --background-modifier-hover: rgba(236, 217, 168, 0.07);
+  --bg-hover: rgba(236, 217, 168, 0.07);
+  --background-modifier-selected: rgba(217, 169, 91, 0.16);
+  --bg-active: rgba(217, 169, 91, 0.16);
+  --background-modifier-accent: rgba(168, 186, 150, 0.18);
+  --border-color: rgba(168, 186, 150, 0.22);
+  --border-color-hover: rgba(168, 186, 150, 0.36);
+  --border-color-focus: rgba(217, 169, 91, 0.6);
+  --brand-primary: #d9a95b;
+  --brand-primary-foreground: #d9a95b;
+  --brand-primary-light: #ecd9a8;
+  --brand-primary-pressed: #b8873f;
+  --brand-secondary: #b8873f;
+  --brand-primary-fill: #231f17;
+  --text-on-brand-primary: #231f17;
+  --accent-primary: #d9a95b;
+  --button-primary-fill: #d9a95b;
+  --button-primary-active-fill: #b8873f;
+  --button-primary-text: #231f17;
+  --text-primary: #ece4d2;
+  --text-secondary: #dcd3bf;
+  --text-primary-muted: #c5bea9;
+  --text-tertiary: #a6aa93;
+  --text-link: #dba6a1;
+  --scrollbar-thumb-bg: rgba(168, 186, 150, 0.3);
+  --scrollbar-thumb-bg-hover: rgba(168, 186, 150, 0.5);
 }
 
-/* a soft porch-light glow at the top of the server list */
+html.theme-light {
+  --background-primary: #f7f1e3;
+  --bg-primary: #f7f1e3;
+  --background-secondary: #ede5d1;
+  --bg-secondary: #ede5d1;
+  --background-secondary-lighter: #f0e9d8;
+  --background-secondary-alt: #e9e0cb;
+  --background-tertiary: #e3d9c1;
+  --bg-tertiary: #e3d9c1;
+  --background-textarea: #e9e0cb;
+  --background-channel-header: #ede5d1;
+  --background-header-primary: #e3d9c1;
+  --background-header-primary-hover: #d6cbb0;
+  --background-header-secondary: #e3d9c1;
+  --form-surface-background: #e3d9c1;
+  --bg-blockquote: #e9e0cb;
+  --background-modifier-hover: rgba(92, 80, 52, 0.07);
+  --bg-hover: rgba(92, 80, 52, 0.07);
+  --background-modifier-selected: rgba(122, 148, 102, 0.16);
+  --bg-active: rgba(122, 148, 102, 0.16);
+  --background-modifier-accent: rgba(120, 108, 78, 0.18);
+  --border-color: rgba(120, 108, 78, 0.22);
+  --border-color-hover: rgba(120, 108, 78, 0.36);
+  --border-color-focus: rgba(122, 148, 102, 0.6);
+  --brand-primary: #d39a4f;
+  --brand-primary-foreground: #d39a4f;
+  --brand-primary-light: #e9c98f;
+  --brand-primary-pressed: #b47e38;
+  --brand-secondary: #b47e38;
+  --brand-primary-fill: #2b2418;
+  --text-on-brand-primary: #2b2418;
+  --accent-primary: #d39a4f;
+  --button-primary-fill: #d39a4f;
+  --button-primary-active-fill: #b47e38;
+  --button-primary-text: #2b2418;
+  --text-primary: #3a3327;
+  --text-secondary: #4b4335;
+  --text-primary-muted: #675d4b;
+  --text-tertiary: #857b65;
+  --text-link: #a35e59;
+  --scrollbar-thumb-bg: rgba(120, 108, 78, 0.3);
+  --scrollbar-thumb-bg-hover: rgba(120, 108, 78, 0.5);
+}
+
+/* a faint porch-light glow in the corner */
 html.theme-dark body {
   background:
-    radial-gradient(60rem 30rem at 0% 0%, rgba(233, 163, 92, 0.05), transparent 70%),
-    #131027;
+    radial-gradient(60rem 30rem at 0% 0%, rgba(217, 169, 91, 0.05), transparent 70%),
+    #171b15;
 }
 
-::selection {
-  background: rgba(233, 163, 92, 0.35);
-}
+html.theme-dark ::selection { background: rgba(217, 169, 91, 0.35); }
+html.theme-light ::selection { background: rgba(122, 148, 102, 0.3); }
