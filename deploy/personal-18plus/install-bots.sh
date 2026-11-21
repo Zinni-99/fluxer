@@ -27,6 +27,9 @@ echo "==> Installing the caretaker bots"
 install -d -m 0755 /opt/fluxer-caretaker
 install -m 0755 "$here/caretaker/caretaker.py" /opt/fluxer-caretaker/caretaker.py
 install -m 0755 "$here/caretaker/offsite-backup.sh" /opt/fluxer-caretaker/offsite-backup.sh
+if [ -f "$here/branding/porchlite-theme.css" ]; then
+	install -m 0644 "$here/branding/porchlite-theme.css" /opt/fluxer-caretaker/theme.css
+fi
 if [ -d "$here/branding/badges" ]; then
 	install -d -m 0755 /opt/fluxer-caretaker/badges
 	install -m 0644 "$here"/branding/badges/*.png /opt/fluxer-caretaker/badges/
@@ -40,13 +43,13 @@ python3 /opt/fluxer-caretaker/caretaker.py test-notify
 echo "==> Turning on the adults-only settings"
 python3 /opt/fluxer-caretaker/caretaker.py apply-settings
 
-if [ -f "$here/branding/zsplace-logo-512.png" ]; then
+if [ -f "$here/branding/porchlite-logo-512.png" ]; then
 	echo "==> Applying the logo, icon and colour"
 	rexctl branding set \
-		--name "${INSTANCE_NAME:-Z's Place}" \
-		--colour "${BRAND_COLOR:-#FF4FA0}" \
-		--logo "$here/branding/zsplace-logo-512.png" \
-		--icon "$here/branding/zsplace-favicon-512.png" || echo "Branding failed; you can upload it in /admin instead."
+		--name "${INSTANCE_NAME:-Porchlite}" \
+		--colour "${BRAND_COLOR:-#FFA53D}" \
+		--logo "$here/branding/porchlite-logo-512.png" \
+		--icon "$here/branding/porchlite-favicon-512.png" || echo "Branding failed; you can upload it in /admin instead."
 fi
 
 echo "==> Starting the age-gate, reports and health bots"

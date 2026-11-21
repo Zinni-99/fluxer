@@ -10,7 +10,7 @@ server with no pip installs. Settings come from /etc/fluxer-caretaker.env
   age-gate        Review people waiting for approval and enforce the minimum age.
   reports         Notify the owner about new reports (child-safety ones flagged urgent).
   health          Check rexctl status, the public URL and free disk space.
-  badges-setup    Upload the Z's Place badge images as user badges (safe to re-run).
+  badges-setup    Upload the Porchlite badge images as user badges (safe to re-run).
   badges          Hand out and take back badges automatically (see BADGE_* settings).
   test-notify     Send a test notification.
   alert           Send a custom notification.
@@ -194,6 +194,9 @@ def cmd_apply_settings(_: argparse.Namespace) -> None:
         branding["product_name"] = product
     if CFG.get("BRAND_COLOR"):
         branding["theme_color"] = CFG["BRAND_COLOR"]
+    theme_file = Path(CFG.get("THEME_CSS", "/opt/fluxer-caretaker/theme.css"))
+    if theme_file.exists():
+        branding["custom_css"] = theme_file.read_text()[:32768]
     if branding:
         patch["app_public"]["branding"] = branding
     if legal_base:
@@ -326,7 +329,7 @@ BADGES = [
      ["Consent Queen", "Consent King", "Consent Royalty"]),
     ("hype-fairy", "Hype Fairy", "Your biggest cheerleader", []),
     ("snack", "Snack", "Looking delicious today", []),
-    ("og-z", "OG Z", "Here since day one", []),
+    ("og-porchlite", "OG Porchlite", "Here since day one", []),
 ]
 
 
@@ -389,7 +392,7 @@ def cmd_badges(_: argparse.Namespace) -> None:
     """Keep badges in step with the rules:
 
     - Peach Fuzz while someone joined the server less than BADGE_PEACH_FUZZ_DAYS ago.
-    - OG Z for everyone who joined before BADGE_OG_BEFORE (kept for good).
+    - OG Porchlite for everyone who joined before BADGE_OG_BEFORE (kept for good).
     - Any other badge while the member has a server role with the same name
       (for example a "Brat Energy" role, from a role picker or given by a mod).
 
@@ -411,7 +414,7 @@ def cmd_badges(_: argparse.Namespace) -> None:
     role_names = {str(r["id"]): _norm(r.get("name", "")) for r in guild.get("roles", [])}
     by_role: dict[str, str] = {}
     for _, name, _, aliases in BADGES:
-        if name in ("Peach Fuzz", "OG Z") or name not in ids:
+        if name in ("Peach Fuzz", "OG Porchlite") or name not in ids:
             continue
         for label in [name, *aliases]:
             by_role[_norm(label)] = ids[name]
@@ -428,15 +431,15 @@ def cmd_badges(_: argparse.Namespace) -> None:
         want: set[str] = set()
         if "Peach Fuzz" in ids and fuzz_days and (today - joined).days < fuzz_days:
             want.add(ids["Peach Fuzz"])
-        if "OG Z" in ids and og_cutoff and joined.date() < og_cutoff:
-            want.add(ids["OG Z"])
+        if "OG Porchlite" in ids and og_cutoff and joined.date() < og_cutoff:
+            want.add(ids["OG Porchlite"])
         for role_id in member.get("roles", []):
             badge_id = by_role.get(role_names.get(str(role_id), ""))
             if badge_id:
                 want.add(badge_id)
 
         mine = set(given.get(uid, []))
-        keep_og = {ids["OG Z"]} & mine if "OG Z" in ids else set()
+        keep_og = {ids["OG Porchlite"]} & mine if "OG Porchlite" in ids else set()
         current = set(str(b) for b in (_get_user(uid).get("badge_ids") or []))
         add = want - current
         drop = (mine - want - keep_og) & current

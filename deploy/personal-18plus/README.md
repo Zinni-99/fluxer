@@ -1,4 +1,4 @@
-# Z's Place: personal adults-only Fluxer server
+# Porchlite: personal adults-only Fluxer server
 
 Everything you need to run your own private, 18+ Fluxer server, plus small bots that look after it. It uses the official installer (`rexctl`) for the hard parts, so you never have to touch Docker files.
 
@@ -103,7 +103,7 @@ journalctl -u 'fluxer-caretaker@*' --since today   # what the bots did
 
 ## Badges
 
-The kit comes with 14 profile badges (Peach Fuzz, Brat Energy, OG Z and more) in
+The kit comes with 14 profile badges (Peach Fuzz, Brat Energy, OG Porchlite and more) in
 [`branding/badges/`](branding/badges/). Like staff badges, members can't pick them
 themselves; you or the badge bot hand them out.
 
@@ -114,13 +114,41 @@ themselves; you or the badge bot hand them out.
 The rules:
 
 - **Peach Fuzz** for the first `BADGE_PEACH_FUZZ_DAYS` days (14 by default) after someone joins.
-- **OG Z** for good, for everyone who joined before `BADGE_OG_BEFORE`.
+- **OG Porchlite** for good, for everyone who joined before `BADGE_OG_BEFORE`.
 - **Every other badge** follows a server role with the same name. Make roles such as
   "Brat Energy" or "Hype Fairy" and put them in a role picker, or give them by hand,
   and the badge comes and goes with the role.
 
 You can still give any badge by hand in the admin panel (open the user, Badges tab).
 The bot never takes away a badge it didn't give.
+
+## Moving from Z's Place to Porchlite
+
+If you already installed under zsplace.site, these steps switch everything over. If you haven't installed yet, just use `porchlite.xyz` in step 4 above and skip this.
+
+1. **DNS:** at your domain registrar, add an **A record** for `porchlite.xyz` (host `@`) pointing at your server's IP. Wait until `ping porchlite.xyz` shows that IP.
+2. **Get the new kit on the server:**
+   ```sh
+   cd ~/fluxer && git pull
+   ```
+3. **Move Fluxer to the new domain** (it gets a new HTTPS certificate on its own):
+   ```sh
+   sudo rexctl config set domain porchlite.xyz
+   ```
+   Passkeys made on the old domain stop working; passwords are fine.
+4. **Update the bot settings** to the new name, address and colour:
+   ```sh
+   sudo sed -i -e 's#zsplace.site#porchlite.xyz#g' -e "s#Z's Place#Porchlite#g" \
+     -e 's#^BRAND_COLOR=.*#BRAND_COLOR=\#FFA53D#' /etc/fluxer-caretaker.env
+   ```
+5. **Apply the look:** this sets the name, amber colour, lantern logo and icon, the Porchlite site theme and the badges.
+   ```sh
+   cd ~/fluxer/deploy/personal-18plus && sudo sh install-bots.sh
+   ```
+6. **Sign-in background (optional):** in `https://porchlite.xyz/admin`, open **Branding** and upload `branding/porchlite-backdrop.jpg` as the sign-in backdrop.
+7. **Old address:** keep `zsplace.site` pointing at the server until people have moved over, or let it lapse.
+
+The site theme is `branding/porchlite-theme.css`. It recolours Fluxer's dark theme (members on light mode keep the stock light theme). To change it, edit that file and run `sudo sh install-bots.sh` again; to remove it, delete `/opt/fluxer-caretaker/theme.css` and clear the **Custom CSS** box in `/admin` Branding.
 
 ## Files here
 
@@ -131,6 +159,7 @@ The bot never takes away a badge it didn't give.
 | `caretaker/caretaker.py` | The bots (Python standard library only) |
 | `caretaker/caretaker.env.example` | Settings for the bots |
 | `caretaker/offsite-backup.sh` | Daily copy of backups to cloud storage with rclone |
+| `branding/porchlite-theme.css` | Site theme (custom CSS) applied by `apply-settings` |
 | `branding/badges/` | Profile badge images used by the badge bot |
 | `systemd/` | Timers that run the bots |
 | `legal/` | Rules, terms and privacy templates |

@@ -1,0 +1,63 @@
+/* Porchlite theme for Fluxer: warm lantern light on a night-sky purple.
+   Applied as the instance's custom CSS by "caretaker apply-settings".
+   Only the dark theme is changed; members who pick light mode keep Fluxer's light theme. */
+html.theme-dark {
+  /* surfaces, darkest to lightest */
+  --background-primary: #0f0b22 !important;
+  --bg-primary: #0f0b22 !important;
+  --background-secondary: #1c1640 !important;
+  --bg-secondary: #1c1640 !important;
+  --background-secondary-lighter: #211a4a !important;
+  --background-secondary-alt: #241c4e !important;
+  --background-tertiary: #2a2150 !important;
+  --bg-tertiary: #2a2150 !important;
+  --background-textarea: #241c4e !important;
+  --background-channel-header: #1c1640 !important;
+  --background-header-primary: #2a2150 !important;
+  --background-header-primary-hover: #3a3070 !important;
+  --background-header-secondary: #2a2150 !important;
+  --form-surface-background: #2a2150 !important;
+  --bg-blockquote: #241c4e !important;
+  --background-modifier-hover: rgba(255, 224, 138, 0.06) !important;
+  --bg-hover: rgba(255, 224, 138, 0.06) !important;
+  --background-modifier-selected: rgba(255, 165, 61, 0.14) !important;
+  --bg-active: rgba(255, 165, 61, 0.14) !important;
+  --background-modifier-accent: rgba(201, 182, 255, 0.16) !important;
+  --border-color: rgba(201, 182, 255, 0.18) !important;
+  --border-color-hover: rgba(201, 182, 255, 0.3) !important;
+  --border-color-focus: rgba(255, 165, 61, 0.55) !important;
+
+  /* brand: lantern amber, with dark text on top for readability */
+  --brand-primary: #ffa53d !important;
+  --brand-primary-foreground: #ffa53d !important;
+  --brand-primary-light: #ffe08a !important;
+  --brand-primary-pressed: #d9731f !important;
+  --brand-secondary: #d9731f !important;
+  --brand-primary-fill: #1a0f2e !important;
+  --text-on-brand-primary: #1a0f2e !important;
+  --accent-primary: #ffa53d !important;
+  --button-primary-fill: #ffa53d !important;
+  --button-primary-active-fill: #d9731f !important;
+  --button-primary-text: #1a0f2e !important;
+
+  /* text: candle cream and lavender */
+  --text-primary: #fffbe6 !important;
+  --text-secondary: #f2ecd6 !important;
+  --text-primary-muted: #d8d0f0 !important;
+  --text-tertiary: #b9b3e6 !important;
+  --text-link: #ffc46b !important;
+
+  --scrollbar-thumb-bg: rgba(201, 182, 255, 0.28) !important;
+  --scrollbar-thumb-bg-hover: rgba(201, 182, 255, 0.5) !important;
+}
+
+/* a soft porch-light glow at the top of the server list */
+html.theme-dark body {
+  background:
+    radial-gradient(60rem 30rem at 0% 0%, rgba(255, 165, 61, 0.08), transparent 70%),
+    #0f0b22;
+}
+
+::selection {
+  background: rgba(255, 165, 61, 0.35);
+}
