@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Fluxer caretaker server levels on a schedule
+
+[Timer]
+OnCalendar=*-*-* *:5/15:00
+Persistent=true
+Unit=fluxer-caretaker@levels.service
+
+[Install]
+WantedBy=timers.target

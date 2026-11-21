@@ -34,6 +34,10 @@ if [ -d "$here/branding/badges" ]; then
 	install -d -m 0755 /opt/fluxer-caretaker/badges
 	install -m 0644 "$here"/branding/badges/*.png /opt/fluxer-caretaker/badges/
 fi
+if [ -d "$here/branding/levels" ]; then
+	install -d -m 0755 /opt/fluxer-caretaker/levels
+	install -m 0644 "$here"/branding/levels/*.png /opt/fluxer-caretaker/levels/
+fi
 install -m 0644 "$here"/systemd/*.service "$here"/systemd/*.timer /etc/systemd/system/
 systemctl daemon-reload
 
@@ -61,6 +65,14 @@ if [ -n "${BADGE_GUILD_ID:-}" ]; then
 	systemctl enable --now fluxer-caretaker-badges.timer
 else
 	echo "==> Badge bot skipped (BADGE_GUILD_ID is empty)"
+fi
+
+if [ -n "${GUILD_LEVELS:-}" ]; then
+	echo "==> Uploading the level badges and starting server levels ($GUILD_LEVELS members)"
+	python3 /opt/fluxer-caretaker/caretaker.py levels-setup || echo "Level badge upload failed; check the API key permissions."
+	systemctl enable --now fluxer-caretaker-levels.timer
+else
+	echo "==> Server levels skipped (GUILD_LEVELS is empty)"
 fi
 
 echo "==> Weekly automatic upgrades (Sunday 04:00), each with a backup first,"
