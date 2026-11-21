@@ -194,6 +194,9 @@ def cmd_apply_settings(_: argparse.Namespace) -> None:
         branding["product_name"] = product
     if CFG.get("BRAND_COLOR"):
         branding["theme_color"] = CFG["BRAND_COLOR"]
+    theme_file = Path(CFG.get("THEME_CSS", "/opt/fluxer-caretaker/theme.css"))
+    if theme_file.exists():
+        branding["custom_css"] = theme_file.read_text()[:32768]
     if branding:
         patch["app_public"]["branding"] = branding
     if legal_base:

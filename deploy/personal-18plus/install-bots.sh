@@ -27,6 +27,9 @@ echo "==> Installing the caretaker bots"
 install -d -m 0755 /opt/fluxer-caretaker
 install -m 0755 "$here/caretaker/caretaker.py" /opt/fluxer-caretaker/caretaker.py
 install -m 0755 "$here/caretaker/offsite-backup.sh" /opt/fluxer-caretaker/offsite-backup.sh
+if [ -f "$here/branding/porchlite-theme.css" ]; then
+	install -m 0644 "$here/branding/porchlite-theme.css" /opt/fluxer-caretaker/theme.css
+fi
 if [ -d "$here/branding/badges" ]; then
 	install -d -m 0755 /opt/fluxer-caretaker/badges
 	install -m 0644 "$here"/branding/badges/*.png /opt/fluxer-caretaker/badges/
