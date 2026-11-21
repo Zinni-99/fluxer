@@ -181,8 +181,13 @@ def cmd_apply_settings(_: argparse.Namespace) -> None:
             "url": f"{legal_base}/RULES.md" if legal_base else None,
         },
     }
+    branding: dict = {}
     if product:
-        patch["app_public"]["branding"] = {"product_name": product}
+        branding["product_name"] = product
+    if CFG.get("BRAND_COLOR"):
+        branding["theme_color"] = CFG["BRAND_COLOR"]
+    if branding:
+        patch["app_public"]["branding"] = branding
     if legal_base:
         patch["app_public"]["legal"] = {
             "terms_url": f"{legal_base}/TERMS.md",
