@@ -1,11 +1,336 @@
 /* Porchlite theme for Fluxer, cottagecore edition.
-   Dark mode = "dusk garden" (moss, honey lantern light, linen text, dusty-rose links).
-   Light mode = "morning cottage" (cream linen, warm wood, honey, rose).
-   Applied as the instance's custom CSS by "caretaker apply-settings".
-   No !important on purpose: this is the default look, and members can still
-   pick their own theme in Appearance, which loads after this and wins. */
+   Dark (and Coal) = "dusk garden": moss, honey lantern light, linen text, dusty-rose links.
+   Light = "morning cottage": cream linen, warm wood, honey, rose.
+   Part 1 is Fluxer's full colour system regenerated in cottage colours (every surface,
+   button, mention, code block and status colour). Part 2 hand-tunes the main surfaces and text.
+   No !important: members can still pick their own theme in Appearance. */
 
-html.theme-dark {
+/* ---- part 1: full colour system ---- */
+html.theme-dark, html.theme-coal {
+  --background-primary: hsl(100, calc(14% * var(--saturation-factor)), 5%);
+  --background-secondary: hsl(100, calc(14% * var(--saturation-factor)), 10.59%);
+  --background-secondary-lighter: hsl(100, calc(14% * var(--saturation-factor)), 12.44%);
+  --background-secondary-alt: hsl(100, calc(14% * var(--saturation-factor)), 14.15%);
+  --background-tertiary: hsl(100, calc(14% * var(--saturation-factor)), 17.16%);
+  --background-channel-header: hsl(100, calc(14% * var(--saturation-factor)), 15.72%);
+  --guild-list-foreground: hsl(100, calc(14% * var(--saturation-factor)), 16.7%);
+  --background-header-secondary: hsl(100, calc(14% * var(--saturation-factor)), 19.25%);
+  --background-header-primary: hsl(100, calc(14% * var(--saturation-factor)), 19.25%);
+  --background-textarea: hsl(100, calc(14% * var(--saturation-factor)), 14.69%);
+  --background-header-primary-hover: hsl(100, calc(14% * var(--saturation-factor)), 23.57%);
+  --text-tertiary-secondary: hsl(100, calc(14% * var(--saturation-factor)), 60%);
+  --text-tertiary-muted: hsl(100, calc(14% * var(--saturation-factor)), 62.88%);
+  --text-tertiary: hsl(100, calc(14% * var(--saturation-factor)), 70.4%);
+  --text-primary-muted: hsl(100, calc(14% * var(--saturation-factor)), 81.42%);
+  --text-chat-muted: hsl(100, calc(14% * var(--saturation-factor)), 81.42%);
+  --text-secondary: hsl(100, calc(14% * var(--saturation-factor)), 90.36%);
+  --text-chat: hsl(100, calc(14% * var(--saturation-factor)), 93.67%);
+  --text-primary: hsl(100, calc(14% * var(--saturation-factor)), 96%);
+  --panel-control-bg: color-mix(in srgb, var(--background-secondary-alt) 90%, hsl(100, calc(10% * var(--saturation-factor)), 2%) 10% );
+  --panel-control-border: hsla(100, calc(30% * var(--saturation-factor)), 65%, 0.45);
+  --panel-control-divider: hsla(100, calc(30% * var(--saturation-factor)), 55%, 0.35);
+  --panel-control-highlight: hsla(0, 0%, 100%, 0.04);
+  --background-modifier-hover: hsla(100, calc(14% * var(--saturation-factor)), 100%, 0.05);
+  --background-modifier-selected: hsla(100, calc(14% * var(--saturation-factor)), 100%, 0.1);
+  --background-modifier-accent: hsla(100, calc(13% * var(--saturation-factor)), 80%, 0.15);
+  --background-modifier-accent-focus: hsla(100, calc(13% * var(--saturation-factor)), 80%, 0.22);
+  --control-button-normal-bg: transparent;
+  --control-button-normal-text: var(--text-primary-muted);
+  --control-button-hover-bg: hsl(100, calc(14% * var(--saturation-factor)), 22%);
+  --control-button-hover-text: var(--text-primary);
+  --control-button-active-bg: hsl(100, calc(14% * var(--saturation-factor)), 24%);
+  --control-button-active-text: var(--text-primary);
+  --control-button-danger-text: hsl(1, calc(77% * var(--saturation-factor)), 60%);
+  --control-button-danger-hover-bg: hsl(1, calc(77% * var(--saturation-factor)), 20%);
+  --brand-primary: var(--instance-brand-primary, hsl(37, calc(60% * var(--saturation-factor)), 55%));
+  --brand-secondary: var(--instance-brand-secondary, hsl(37, calc(60% * var(--saturation-factor)), 49%));
+  --brand-primary-light: var(--instance-brand-primary-light, hsl(37, calc(100% * var(--saturation-factor)), 84%));
+  --brand-primary-fill: var(--instance-brand-primary-fill, hsl(0, 0%, 100%));
+  --brand-primary-shade: var(--instance-brand-primary-shade, hsl(0, 0%, 0%));
+  --brand-primary-pressed: color-mix(in srgb, var(--brand-primary) 90%, var(--brand-primary-shade));
+  --brand-primary-foreground: var(--instance-brand-primary-foreground, hsl(37, calc(60% * var(--saturation-factor)), 55%));
+  --brand-primary-light-fill: var(--instance-brand-primary-light-fill, hsl(0, 0%, 100%));
+  --brand-tint: var(--instance-brand-tint, color-mix(in srgb, var(--brand-primary) 36%, var(--background-secondary) 64%));
+  --brand-tint-hover: var(--instance-brand-tint-hover, color-mix(in srgb, var(--brand-primary) 48%, var(--background-secondary) 52%));
+  --brand-tint-border: var(--instance-brand-tint-border, var(--brand-primary));
+  --status-online: hsl(100, calc(38% * var(--saturation-factor)), 40%);
+  --status-idle: hsl(45, calc(93% * var(--saturation-factor)), 50%);
+  --status-dnd: hsl(0, calc(84% * var(--saturation-factor)), 60%);
+  --status-offline: hsl(218, calc(11% * var(--saturation-factor)), 65%);
+  --status-danger: hsl(1, calc(77% * var(--saturation-factor)), 55%);
+  --status-warning: var(--status-idle);
+  --text-warning: hsl(45, calc(93% * var(--saturation-factor)), 55%);
+  --plutonium: var(--brand-primary);
+  --plutonium-hover: var(--brand-secondary);
+  --plutonium-text: var(--text-on-brand-primary);
+  --plutonium-icon: hsl(38, calc(92% * var(--saturation-factor)), 50%);
+  --invite-verified-icon-color: var(--text-on-brand-primary);
+  --text-link: hsl(4, calc(52% * var(--saturation-factor)), 70%);
+  --text-on-brand-primary: var(--instance-text-on-brand-primary, hsl(0, 0%, 98%));
+  --text-on-brand-primary-light: var(--instance-text-on-brand-primary-light, hsl(0, 0%, 98%));
+  --text-on-brand-tint: var(--instance-text-on-brand-tint, var(--text-on-brand-primary));
+  --text-on-dark: hsl(0, 0%, 98%);
+  --code-text: color-mix(in srgb, var(--text-secondary) 82%, hsl(340, calc(50% * var(--saturation-factor)), 90%) 18%);
+  --text-code: var(--code-text);
+  --code-muted: color-mix(in srgb, var(--text-code) 42%, var(--text-tertiary) 58%);
+  --code-inline-bg: color-mix(in srgb, var(--background-secondary-alt) 88%, var(--background-tertiary) 12%);
+  --bg-code: var(--code-inline-bg);
+  --code-block-bg: color-mix(in srgb, var(--background-secondary-alt) 92%, var(--background-primary) 8%);
+  --bg-code-block: var(--code-block-bg);
+  --code-block-border: color-mix(in srgb, var(--border-color) 90%, var(--text-code) 10%);
+  --code-block-highlight: color-mix(in srgb, var(--text-primary) 10%, transparent);
+  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-bg: var(--text-code);
+  --ansi-fg-black: color-mix(in srgb, hsl(0, 0%, 12%) 72%, var(--text-tertiary) 28%);
+  --ansi-fg-red: color-mix(in srgb, hsl(0, calc(88% * var(--saturation-factor)), 62%) 92%, var(--text-code) 8%);
+  --ansi-fg-green: color-mix(in srgb, hsl(99, calc(29% * var(--saturation-factor)), 47%) 92%, var(--text-code) 8%);
+  --ansi-fg-yellow: color-mix(in srgb, hsl(41, calc(53% * var(--saturation-factor)), 67%) 92%, var(--text-code) 8%);
+  --ansi-fg-blue: color-mix(in srgb, hsl(207, calc(61% * var(--saturation-factor)), 59%) 92%, var(--text-code) 8%);
+  --ansi-fg-magenta: color-mix(in srgb, hsl(305, calc(35% * var(--saturation-factor)), 65%) 92%, var(--text-code) 8%);
+  --ansi-fg-cyan: color-mix(in srgb, hsl(168, calc(53% * var(--saturation-factor)), 55%) 92%, var(--text-code) 8%);
+  --ansi-fg-white: color-mix(in srgb, hsl(0, 0%, 83%) 88%, var(--text-secondary) 12%);
+  --ansi-fg-bright-black: color-mix(in srgb, hsl(0, 0%, 50%) 86%, var(--text-tertiary) 14%);
+  --ansi-fg-bright-red: color-mix(in srgb, hsl(0, calc(88% * var(--saturation-factor)), 62%) 94%, var(--text-primary) 6%);
+  --ansi-fg-bright-green: color-mix(in srgb, hsl(99, calc(29% * var(--saturation-factor)), 47%) 88%, var(--text-primary) 12%);
+  --ansi-fg-bright-yellow: color-mix(in srgb, hsl(41, calc(53% * var(--saturation-factor)), 67%) 94%, var(--text-primary) 6%);
+  --ansi-fg-bright-blue: color-mix(in srgb, hsl(207, calc(61% * var(--saturation-factor)), 59%) 94%, var(--text-primary) 6%);
+  --ansi-fg-bright-magenta: color-mix(in srgb, hsl(305, calc(35% * var(--saturation-factor)), 65%) 94%, var(--text-primary) 6%);
+  --ansi-fg-bright-cyan: color-mix(in srgb, hsl(168, calc(53% * var(--saturation-factor)), 55%) 94%, var(--text-primary) 6%);
+  --ansi-fg-bright-white: var(--text-primary);
+  --ansi-bg-black: color-mix(in srgb, hsl(0, 0%, 12%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-red: color-mix(in srgb, hsl(0, calc(88% * var(--saturation-factor)), 62%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-green: color-mix(in srgb, hsl(99, calc(29% * var(--saturation-factor)), 47%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-yellow: color-mix(in srgb, hsl(41, calc(53% * var(--saturation-factor)), 67%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-blue: color-mix(in srgb, hsl(207, calc(61% * var(--saturation-factor)), 59%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-magenta: color-mix(in srgb, hsl(305, calc(35% * var(--saturation-factor)), 65%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-cyan: color-mix(in srgb, hsl(168, calc(53% * var(--saturation-factor)), 55%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-white: color-mix(in srgb, hsl(0, 0%, 83%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-black: color-mix(in srgb, hsl(0, 0%, 50%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-red: color-mix(in srgb, hsl(0, calc(88% * var(--saturation-factor)), 62%) 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-green: color-mix(in srgb, hsl(99, calc(29% * var(--saturation-factor)), 47%) 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-yellow: color-mix(in srgb, hsl(41, calc(53% * var(--saturation-factor)), 67%) 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-blue: color-mix(in srgb, hsl(207, calc(61% * var(--saturation-factor)), 59%) 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-magenta: color-mix(in srgb, hsl(305, calc(35% * var(--saturation-factor)), 65%) 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-cyan: color-mix(in srgb, hsl(168, calc(53% * var(--saturation-factor)), 55%) 92%, var(--code-block-bg) 8%);
+  --ansi-bg-bright-white: color-mix(in srgb, hsl(0, 0%, 100%) 92%, var(--code-block-bg) 8%);
+  --text-selection: hsla(198, calc(92% * var(--saturation-factor)), 70%, 0.35);
+  --markup-mention-text: var(--text-link);
+  --markup-mention-fill: color-mix(in srgb, var(--text-link) 20%, transparent);
+  --markup-mention-border: hsla(4, calc(52% * var(--saturation-factor)), 70%, 0.3);
+  --markup-jump-link-text: var(--text-link);
+  --markup-jump-link-fill: color-mix(in srgb, var(--text-link) 12%, transparent);
+  --markup-jump-link-hover-fill: color-mix(in srgb, var(--text-link) 20%, transparent);
+  --markup-everyone-text: hsl(250, calc(80% * var(--saturation-factor)), 75%);
+  --markup-everyone-fill: color-mix(in srgb, hsl(250, calc(80% * var(--saturation-factor)), 75%) 18%, transparent);
+  --markup-everyone-border: hsla(250, calc(80% * var(--saturation-factor)), 75%, 0.3);
+  --markup-here-text: hsl(45, calc(90% * var(--saturation-factor)), 70%);
+  --markup-here-fill: color-mix(in srgb, hsl(45, calc(90% * var(--saturation-factor)), 70%) 18%, transparent);
+  --markup-here-border: hsla(45, calc(90% * var(--saturation-factor)), 70%, 0.3);
+  --markup-interactive-hover-text: var(--text-link);
+  --markup-interactive-hover-fill: color-mix(in srgb, var(--text-link) 30%, transparent);
+  --interactive-muted: color-mix(in oklab, hsl(228, calc(10% * var(--saturation-factor)), 35%) 100%, hsl(245, calc(100% * var(--saturation-factor)), 80%) 40% );
+  --interactive-active: color-mix(in oklab, hsl(0, calc(0% * var(--saturation-factor)), 100%) 100%, hsl(245, calc(100% * var(--saturation-factor)), 80%) 40% );
+  --button-primary-fill: hsl(139, calc(55% * var(--saturation-factor)), 44%);
+  --button-primary-active-fill: hsl(136, calc(60% * var(--saturation-factor)), 38%);
+  --button-primary-text: hsl(0, 0%, 100%);
+  --button-secondary-fill: hsla(0, 0%, 100%, 0.1);
+  --button-secondary-active-fill: hsla(0, 0%, 100%, 0.15);
+  --button-secondary-text: hsl(0, 0%, 100%);
+  --button-secondary-active-text: var(--button-secondary-text);
+  --button-danger-fill: hsl(359, calc(70% * var(--saturation-factor)), 54%);
+  --button-danger-active-fill: hsl(359, calc(65% * var(--saturation-factor)), 45%);
+  --button-danger-text: hsl(0, 0%, 100%);
+  --button-danger-outline-border: 1px solid hsl(359, calc(70% * var(--saturation-factor)), 54%);
+  --button-danger-outline-text: hsl(0, 0%, 100%);
+  --button-danger-outline-active-fill: hsl(359, calc(65% * var(--saturation-factor)), 48%);
+  --button-danger-outline-active-border: transparent;
+  --button-ghost-text: hsl(0, 0%, 100%);
+  --button-inverted-fill: hsl(0, 0%, 100%);
+  --button-inverted-text: hsl(0, 0%, 0%);
+  --button-outline-border: 1px solid hsla(0, 0%, 100%, 0.3);
+  --button-outline-text: hsl(0, 0%, 100%);
+  --button-outline-active-fill: hsla(0, 0%, 100%, 0.15);
+  --button-outline-active-border: 1px solid hsla(0, 0%, 100%, 0.4);
+  --theme-border: transparent;
+  --theme-border-width: 0px;
+  --bg-primary: var(--background-primary);
+  --bg-secondary: var(--background-secondary);
+  --bg-tertiary: var(--background-tertiary);
+  --bg-hover: var(--background-modifier-hover);
+  --bg-active: var(--background-modifier-selected);
+  --bg-blockquote: var(--background-secondary-alt);
+  --bg-table-header: var(--background-tertiary);
+  --bg-table-row-odd: var(--background-primary);
+  --bg-table-row-even: var(--background-secondary);
+  --border-color: hsla(100, calc(14% * var(--saturation-factor)), 50%, 0.2);
+  --border-color-hover: hsla(100, calc(14% * var(--saturation-factor)), 50%, 0.3);
+  --border-color-focus: hsla(198, calc(92% * var(--saturation-factor)), 70%, 0.45);
+  --accent-primary: var(--brand-primary);
+  --accent-success: var(--status-online);
+  --accent-warning: var(--status-idle);
+  --accent-danger: var(--status-dnd);
+  --accent-info: var(--text-link);
+  --accent-purple: hsl(350, calc(40% * var(--saturation-factor)), 65%);
+  --alert-note-color: hsl(4, calc(52% * var(--saturation-factor)), 70%);
+  --alert-tip-color: hsl(100, calc(38% * var(--saturation-factor)), 45%);
+  --alert-important-color: hsl(350, calc(40% * var(--saturation-factor)), 65%);
+  --alert-warning-color: hsl(45, calc(93% * var(--saturation-factor)), 55%);
+  --alert-caution-color: hsl(359, calc(75% * var(--saturation-factor)), 60%);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 10px 20px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+  --transition-fast: 100ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+  --spoiler-overlay-color: rgba(0, 0, 0, 0.2);
+  --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.3);
+  --scrollbar-thumb-bg: rgba(121, 122, 124, 0.4);
+  --scrollbar-thumb-bg-hover: rgba(121, 122, 124, 0.7);
+  --scrollbar-track-bg: transparent;
+  --user-area-divider-color: color-mix(in srgb, var(--background-modifier-hover) 70%, transparent);
+} 
+html.theme-light {
+  --background-header-primary-hover: hsl(40, calc(34% * var(--saturation-factor)), 86%);
+  --background-header-primary: hsl(40, calc(34% * var(--saturation-factor)), 86.18%);
+  --background-header-secondary: hsl(40, calc(34% * var(--saturation-factor)), 86.5%);
+  --guild-list-foreground: hsl(40, calc(34% * var(--saturation-factor)), 87.53%);
+  --background-tertiary: hsl(40, calc(34% * var(--saturation-factor)), 88.2%);
+  --background-channel-header: hsl(40, calc(34% * var(--saturation-factor)), 89.13%);
+  --background-secondary-alt: hsl(40, calc(34% * var(--saturation-factor)), 90.96%);
+  --background-secondary: hsl(40, calc(34% * var(--saturation-factor)), 92.84%);
+  --background-secondary-lighter: hsl(40, calc(34% * var(--saturation-factor)), 94.61%);
+  --background-textarea: hsl(40, calc(34% * var(--saturation-factor)), 95.68%);
+  --background-primary: hsl(40, calc(34% * var(--saturation-factor)), 98.5%);
+  --text-primary: hsl(40, calc(34% * var(--saturation-factor)), 15%);
+  --text-chat: hsl(40, calc(34% * var(--saturation-factor)), 20.99%);
+  --text-secondary: hsl(40, calc(34% * var(--saturation-factor)), 33.78%);
+  --text-chat-muted: hsl(40, calc(34% * var(--saturation-factor)), 42.2%);
+  --text-primary-muted: hsl(40, calc(34% * var(--saturation-factor)), 42.2%);
+  --text-tertiary: hsl(40, calc(34% * var(--saturation-factor)), 47.76%);
+  --text-tertiary-secondary: hsl(40, calc(34% * var(--saturation-factor)), 51.56%);
+  --text-tertiary-muted: hsl(40, calc(34% * var(--saturation-factor)), 53.12%);
+  --panel-control-bg: color-mix(in srgb, var(--background-secondary) 65%, hsl(0, 0%, 100%) 35%);
+  --panel-control-border: hsla(40, calc(25% * var(--saturation-factor)), 45%, 0.25);
+  --panel-control-divider: hsla(40, calc(30% * var(--saturation-factor)), 35%, 0.2);
+  --panel-control-highlight: hsla(0, 0%, 100%, 0.65);
+  --background-modifier-hover: hsla(40, calc(10% * var(--saturation-factor)), 10%, 0.05);
+  --background-modifier-selected: hsla(40, calc(10% * var(--saturation-factor)), 10%, 0.1);
+  --background-modifier-accent: hsla(40, calc(10% * var(--saturation-factor)), 40%, 0.22);
+  --background-modifier-accent-focus: hsla(40, calc(10% * var(--saturation-factor)), 40%, 0.32);
+  --control-button-normal-bg: transparent;
+  --control-button-normal-text: hsl(40, calc(34% * var(--saturation-factor)), 50%);
+  --control-button-hover-bg: hsl(40, calc(34% * var(--saturation-factor)), 88%);
+  --control-button-hover-text: hsl(40, calc(34% * var(--saturation-factor)), 20%);
+  --control-button-active-bg: hsl(40, calc(34% * var(--saturation-factor)), 85%);
+  --control-button-active-text: hsl(40, calc(34% * var(--saturation-factor)), 15%);
+  --control-button-danger-text: hsl(359, calc(70% * var(--saturation-factor)), 50%);
+  --control-button-danger-hover-bg: hsl(359, calc(70% * var(--saturation-factor)), 95%);
+  --text-link: hsl(4, calc(52% * var(--saturation-factor)), 45%);
+  --code-text: color-mix(in srgb, var(--text-secondary) 72%, hsl(340, calc(50% * var(--saturation-factor)), 38%) 28%);
+  --text-code: var(--code-text);
+  --code-muted: color-mix(in srgb, var(--text-code) 34%, var(--text-tertiary) 66%);
+  --code-inline-bg: color-mix(in srgb, var(--background-secondary-alt) 92%, var(--text-code) 8%);
+  --bg-code: var(--code-inline-bg);
+  --code-block-bg: color-mix(in srgb, var(--background-primary) 88%, var(--background-secondary) 12%);
+  --bg-code-block: var(--code-block-bg);
+  --code-block-border: color-mix(in srgb, var(--border-color) 92%, var(--text-code) 8%);
+  --code-block-highlight: color-mix(in srgb, hsl(0, 0%, 100%) 82%, transparent);
+  --ansi-inverse-text: var(--code-block-bg);
+  --ansi-inverse-bg: var(--text-code);
+  --ansi-fg-black: var(--text-primary);
+  --ansi-fg-red: color-mix(in srgb, hsl(0, calc(62% * var(--saturation-factor)), 50%) 92%, var(--text-code) 8%);
+  --ansi-fg-green: color-mix(in srgb, hsl(120, calc(100% * var(--saturation-factor)), 25%) 92%, var(--text-code) 8%);
+  --ansi-fg-yellow: color-mix(in srgb, hsl(37, calc(52% * var(--saturation-factor)), 31%) 92%, var(--text-code) 8%);
+  --ansi-fg-blue: color-mix(in srgb, hsl(211, calc(95% * var(--saturation-factor)), 33%) 92%, var(--text-code) 8%);
+  --ansi-fg-magenta: color-mix(in srgb, hsl(288, calc(100% * var(--saturation-factor)), 43%) 92%, var(--text-code) 8%);
+  --ansi-fg-cyan: color-mix(in srgb, hsl(192, calc(95% * var(--saturation-factor)), 38%) 92%, var(--text-code) 8%);
+  --ansi-fg-white: color-mix(in srgb, hsl(0, 0%, 33%) 88%, var(--text-secondary) 12%);
+  --ansi-fg-bright-black: color-mix(in srgb, hsl(0, 0%, 40%) 88%, var(--text-tertiary) 12%);
+  --ansi-fg-bright-red: color-mix(in srgb, hsl(0, calc(62% * var(--saturation-factor)), 50%) 92%, var(--text-primary) 8%);
+  --ansi-fg-bright-green: color-mix(in srgb, hsl(120, calc(82% * var(--saturation-factor)), 44%) 90%, var(--text-primary) 10%);
+  --ansi-fg-bright-yellow: color-mix(in srgb, hsl(62, calc(100% * var(--saturation-factor)), 36%) 90%, var(--text-primary) 10%);
+  --ansi-fg-bright-blue: color-mix(in srgb, hsl(211, calc(95% * var(--saturation-factor)), 33%) 92%, var(--text-primary) 8%);
+  --ansi-fg-bright-magenta: color-mix(in srgb, hsl(300, calc(95% * var(--saturation-factor)), 38%) 92%, var(--text-primary) 8%);
+  --ansi-fg-bright-cyan: color-mix(in srgb, hsl(192, calc(95% * var(--saturation-factor)), 38%) 92%, var(--text-primary) 8%);
+  --ansi-fg-bright-white: color-mix(in srgb, hsl(0, 0%, 65%) 86%, var(--text-primary) 14%);
+  --ansi-bg-black: color-mix(in srgb, hsl(0, 0%, 0%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-red: color-mix(in srgb, hsl(0, calc(62% * var(--saturation-factor)), 50%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-green: color-mix(in srgb, hsl(120, calc(100% * var(--saturation-factor)), 25%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-yellow: color-mix(in srgb, hsl(37, calc(52% * var(--saturation-factor)), 31%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-blue: color-mix(in srgb, hsl(211, calc(95% * var(--saturation-factor)), 33%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-magenta: color-mix(in srgb, hsl(288, calc(100% * var(--saturation-factor)), 43%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-cyan: color-mix(in srgb, hsl(192, calc(95% * var(--saturation-factor)), 38%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-white: color-mix(in srgb, hsl(0, 0%, 90%) 86%, var(--code-block-bg) 14%);
+  --ansi-bg-bright-black: color-mix(in srgb, hsl(0, 0%, 40%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-red: color-mix(in srgb, hsl(0, calc(62% * var(--saturation-factor)), 50%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-green: color-mix(in srgb, hsl(120, calc(82% * var(--saturation-factor)), 44%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-yellow: color-mix(in srgb, hsl(62, calc(100% * var(--saturation-factor)), 36%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-blue: color-mix(in srgb, hsl(211, calc(95% * var(--saturation-factor)), 33%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-magenta: color-mix(in srgb, hsl(300, calc(95% * var(--saturation-factor)), 38%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-cyan: color-mix(in srgb, hsl(192, calc(95% * var(--saturation-factor)), 38%) 88%, var(--code-block-bg) 12%);
+  --ansi-bg-bright-white: color-mix(in srgb, hsl(0, 0%, 90%) 90%, var(--code-block-bg) 10%);
+  --text-selection: hsla(210, calc(90% * var(--saturation-factor)), 50%, 0.2);
+  --markup-mention-border: hsla(4, calc(52% * var(--saturation-factor)), 45%, 0.4);
+  --markup-jump-link-fill: color-mix(in srgb, var(--text-link) 8%, transparent);
+  --markup-everyone-text: hsl(250, calc(70% * var(--saturation-factor)), 45%);
+  --markup-everyone-fill: color-mix(in srgb, hsl(250, calc(70% * var(--saturation-factor)), 45%) 12%, transparent);
+  --markup-everyone-border: hsla(250, calc(70% * var(--saturation-factor)), 45%, 0.4);
+  --markup-here-text: hsl(40, calc(85% * var(--saturation-factor)), 40%);
+  --markup-here-fill: color-mix(in srgb, hsl(40, calc(85% * var(--saturation-factor)), 40%) 12%, transparent);
+  --markup-here-border: hsla(40, calc(85% * var(--saturation-factor)), 40%, 0.4);
+  --status-online: hsl(100, calc(70% * var(--saturation-factor)), 40%);
+  --status-idle: hsl(45, calc(90% * var(--saturation-factor)), 45%);
+  --status-dnd: hsl(359, calc(70% * var(--saturation-factor)), 50%);
+  --status-offline: hsl(210, calc(10% * var(--saturation-factor)), 55%);
+  --plutonium: var(--brand-primary);
+  --plutonium-hover: var(--brand-secondary);
+  --plutonium-text: var(--text-on-brand-primary);
+  --plutonium-icon: hsl(38, calc(92% * var(--saturation-factor)), 45%);
+  --invite-verified-icon-color: var(--brand-primary);
+  --brand-tint: var(--instance-brand-tint, color-mix(in srgb, var(--brand-primary) 12%, var(--background-primary) 88%));
+  --brand-tint-hover: var(--instance-brand-tint-hover, color-mix(in srgb, var(--brand-primary) 18%, var(--background-primary) 82%));
+  --brand-tint-border: var(--instance-brand-tint-border, color-mix(in srgb, var(--brand-primary) 45%, transparent 55%));
+  --text-on-brand-tint: var(--instance-text-on-brand-tint, var(--brand-primary));
+  --border-color: hsla(40, calc(34% * var(--saturation-factor)), 40%, 0.15);
+  --border-color-hover: hsla(40, calc(34% * var(--saturation-factor)), 40%, 0.25);
+  --border-color-focus: hsla(210, calc(90% * var(--saturation-factor)), 50%, 0.4);
+  --bg-primary: var(--background-primary);
+  --bg-secondary: var(--background-secondary);
+  --bg-tertiary: var(--background-tertiary);
+  --bg-hover: var(--background-modifier-hover);
+  --bg-active: var(--background-modifier-selected);
+  --bg-blockquote: var(--background-secondary-alt);
+  --bg-table-header: var(--background-tertiary);
+  --bg-table-row-odd: var(--background-primary);
+  --bg-table-row-even: var(--background-secondary);
+  --alert-note-color: hsl(4, calc(52% * var(--saturation-factor)), 45%);
+  --alert-tip-color: hsl(150, calc(80% * var(--saturation-factor)), 35%);
+  --alert-important-color: hsl(350, calc(40% * var(--saturation-factor)), 50%);
+  --alert-warning-color: hsl(45, calc(90% * var(--saturation-factor)), 45%);
+  --alert-caution-color: hsl(358, calc(80% * var(--saturation-factor)), 50%);
+  --spoiler-overlay-color: rgba(0, 0, 0, 0.1);
+  --spoiler-overlay-hover-color: rgba(0, 0, 0, 0.15);
+  --button-secondary-fill: hsla(40, calc(10% * var(--saturation-factor)), 10%, 0.1);
+  --button-secondary-active-fill: hsla(40, calc(10% * var(--saturation-factor)), 10%, 0.15);
+  --button-secondary-text: hsl(40, calc(34% * var(--saturation-factor)), 15%);
+  --button-secondary-active-text: hsl(40, calc(34% * var(--saturation-factor)), 10%);
+  --button-ghost-text: hsl(40, calc(34% * var(--saturation-factor)), 20%);
+  --button-inverted-fill: hsl(0, 0%, 100%);
+  --button-inverted-text: hsl(0, 0%, 10%);
+  --button-outline-border: 1px solid hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.3);
+  --button-outline-text: hsl(40, calc(34% * var(--saturation-factor)), 20%);
+  --button-outline-active-fill: hsla(40, calc(10% * var(--saturation-factor)), 10%, 0.1);
+  --button-outline-active-border: 1px solid hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.5);
+  --button-danger-outline-border: 1px solid hsl(359, calc(70% * var(--saturation-factor)), 50%);
+  --button-danger-outline-text: hsl(359, calc(70% * var(--saturation-factor)), 45%);
+  --button-danger-outline-active-fill: hsl(359, calc(70% * var(--saturation-factor)), 50%);
+  --user-area-divider-color: hsla(40, calc(34% * var(--saturation-factor)), 40%, 0.2);
+}
+
+/* ---- part 2: hand-tuned surfaces and text ---- */
+html.theme-dark,
+html.theme-coal {
   --background-primary: #171b15;
   --bg-primary: #171b15;
   --background-secondary: #1f251c;
@@ -93,12 +418,11 @@ html.theme-light {
   --scrollbar-thumb-bg-hover: rgba(120, 108, 78, 0.5);
 }
 
-/* a faint porch-light glow in the corner */
-html.theme-dark body {
+html.theme-dark body,
+html.theme-coal body {
   background:
     radial-gradient(60rem 30rem at 0% 0%, rgba(217, 169, 91, 0.05), transparent 70%),
     #171b15;
 }
-
-html.theme-dark ::selection { background: rgba(217, 169, 91, 0.35); }
+html.theme-dark ::selection, html.theme-coal ::selection { background: rgba(217, 169, 91, 0.35); }
 html.theme-light ::selection { background: rgba(122, 148, 102, 0.3); }

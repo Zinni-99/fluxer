@@ -155,7 +155,7 @@ sudo sed -i 's/^BRAND_COLOR=.*/BRAND_COLOR=#D9A95B/' /etc/fluxer-caretaker.env
 cd deploy/personal-18plus && sudo sh install-bots.sh
 ```
 
-The site theme is `branding/porchlite-theme.css`. It recolours Fluxer's dark and light themes (Coal stays stock). To change it, edit that file and run `sudo sh install-bots.sh` again; to remove it, delete `/opt/fluxer-caretaker/theme.css` and clear the **Custom CSS** box in `/admin` Branding.
+The site theme is `branding/porchlite-theme.css`. It recolours all of Fluxer's colours for Dark, Coal (both get dusk garden) and Light (morning cottage). It's about 30 KB; Fluxer's limit for custom CSS is 32 KB. To change it, edit that file and run `sudo sh install-bots.sh` again; to remove it, delete `/opt/fluxer-caretaker/theme.css` and clear the **Custom CSS** box in `/admin` Branding.
 
 ## Files here
 
