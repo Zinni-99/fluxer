@@ -12,6 +12,8 @@ server with no pip installs. Settings come from /etc/fluxer-caretaker.env
   health          Check rexctl status, the public URL and free disk space.
   badges-setup    Upload the Porchlite badge images as user badges (safe to re-run).
   badges          Hand out and take back badges automatically (see BADGE_* settings).
+  levels-setup    Upload the three server-level badges (safe to re-run).
+  levels          Level up communities by member count instead of boosts.
   test-notify     Send a test notification.
   alert           Send a custom notification.
 
@@ -337,25 +339,25 @@ def _norm(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", text.lower())
 
 
-def list_user_badges() -> dict[str, str]:
-    """Return {badge name: badge id} for every user badge on the instance."""
+def list_user_badges(kind: str = "user") -> dict[str, str]:
+    """Return {badge name: badge id} for every badge of this type ("user" or "guild")."""
     found: dict[str, str] = {}
     after = None
     while True:
-        query = "/badges?type=user&limit=200" + (f"&after={after}" if after else "")
+        query = f"/badges?type={kind}&limit=200" + (f"&after={after}" if after else "")
         page = admin("GET", query) or {}
         for badge in page.get("badges", []):
-            if badge.get("type", "user") == "user":
+            if badge.get("type", kind) == kind:
                 found[badge["name"]] = str(badge["id"])
         after = page.get("next")
         if not after:
             return found
 
 
-def cmd_badges_setup(_: argparse.Namespace) -> None:
-    existing = list_user_badges()
-    for slug, name, description, _aliases in BADGES:
-        image = BADGE_DIR / f"{slug}.png"
+def _upload_badges(kind: str, folder: Path, catalog) -> None:
+    existing = list_user_badges(kind)
+    for slug, name, description, *_rest in catalog:
+        image = folder / f"{slug}.png"
         if name in existing:
             print(f"{name}: already there")
             continue
@@ -363,11 +365,15 @@ def cmd_badges_setup(_: argparse.Namespace) -> None:
             print(f"{name}: skipped, {image} is missing")
             continue
         data_url = "data:image/png;base64," + base64.b64encode(image.read_bytes()).decode()
-        made = admin("POST", "/badges", {"type": "user", "name": name, "href": None, "image": data_url},
-                     reason="caretaker: badges-setup")
+        made = admin("POST", "/badges", {"type": kind, "name": name, "href": None, "image": data_url},
+                     reason="caretaker: badge setup")
         admin("PATCH", f"/badges/{made['id']}", {"name": name, "description": description, "href": None},
-              reason="caretaker: badges-setup")
+              reason="caretaker: badge setup")
         print(f"{name}: created")
+
+
+def cmd_badges_setup(_: argparse.Namespace) -> None:
+    _upload_badges("user", BADGE_DIR, BADGES)
 
 
 def _get_user(uid: str) -> dict:
@@ -457,6 +463,136 @@ def cmd_badges(_: argparse.Namespace) -> None:
     print(f"Badges checked, {changes} member(s) updated.")
 
 
+# --------------------------------------------------------------------------- server levels
+
+LEVEL_DIR = Path(os.environ.get("CARETAKER_LEVELS", "/opt/fluxer-caretaker/levels"))
+
+# slug, badge name, hover text, perks unlocked at this level (each level keeps the ones below)
+LEVELS = [
+    ("level-1-porch-light", "Level 1: Porch Light", "This community lit the porch light",
+     ["AUDIO_BITRATE_128_KBPS", "MORE_EMOJI"]),
+    ("level-2-cozy-cottage", "Level 2: Cozy Cottage", "This community is a cozy cottage now",
+     ["AUDIO_BITRATE_256_KBPS", "MORE_STICKERS"]),
+    ("level-3-moonlit-garden", "Level 3: Moonlit Garden", "This community grew a moonlit garden",
+     ["AUDIO_BITRATE_384_KBPS", "UNLIMITED_EMOJI", "UNLIMITED_STICKERS", "VANITY_URL"]),
+]
+LEVEL_PERK_TEXT = {
+    1: "better voice quality (128 kbps) and more emoji slots",
+    2: "even better voice (256 kbps) and more sticker slots",
+    3: "best voice (384 kbps), unlimited emoji and stickers, and a custom invite link",
+}
+
+
+def level_thresholds() -> list[int]:
+    raw = CFG.get("GUILD_LEVELS", "10,25,50")
+    values = [int(x) for x in raw.replace(" ", "").split(",") if x]
+    if len(values) != len(LEVELS) or values != sorted(values):
+        sys.exit(f"caretaker: GUILD_LEVELS must be {len(LEVELS)} rising numbers, like 10,25,50")
+    return values
+
+
+def level_for(members: int, thresholds: list[int]) -> int:
+    return sum(1 for need in thresholds if members >= need)
+
+
+def perks_for(level: int) -> set[str]:
+    return {f for _, _, _, feats in LEVELS[:level] for f in feats}
+
+
+def plan_level_change(level: int, features: set[str], badges: set[str], mine: set[str],
+                      level_badge_ids: list[str | None]) -> tuple[set[str], set[str], list[str] | None]:
+    """Work out what to change on one community.
+
+    Returns (features to add, features to remove, new badge list or None for no change).
+    Only perks and level badges the bot handed out are ever taken away.
+    """
+    want = perks_for(level)
+    add = want - features
+    remove = (mine - want) & features
+    ours = {b for b in level_badge_ids if b}
+    keep = level_badge_ids[level - 1] if level and level_badge_ids[level - 1] else None
+    new_badges = (badges - ours) | ({keep} if keep else set())
+    return add, remove, (sorted(new_badges) if new_badges != badges else None)
+
+
+def _all_guilds() -> list[dict]:
+    guilds: list[dict] = []
+    offset = 0
+    while True:
+        page = (admin("GET", f"/guilds?limit=200&offset={offset}") or {}).get("guilds", [])
+        guilds.extend(page)
+        if len(page) < 200 or offset >= 10000:
+            return guilds
+        offset += 200
+
+
+def cmd_levels_setup(_: argparse.Namespace) -> None:
+    _upload_badges("guild", LEVEL_DIR, LEVELS)
+
+
+def cmd_levels(_: argparse.Namespace) -> None:
+    """Give every community a level from its member count (GUILD_LEVELS, default 10,25,50).
+
+    Each level unlocks perks that would normally need boosts, plus a level badge
+    next to the community's name. With GUILD_LEVELS_KEEP=true (the default) a
+    community keeps its best level even if people leave. The owner gets a
+    system DM and you get an alert on every level-up.
+    """
+    thresholds = level_thresholds()
+    keep_best = CFG.get("GUILD_LEVELS_KEEP", "true").lower() != "false"
+    badge_ids = list_user_badges("guild")
+    level_badges = [badge_ids.get(name) for _, name, _, _ in LEVELS]
+    if not all(level_badges):
+        print("Level badges not created yet (run levels-setup); levelling up without badges.")
+
+    state = load_state("levels")
+    best: dict[str, int] = state.setdefault("best", {})
+    given: dict[str, list[str]] = state.setdefault("perks", {})
+    changed = 0
+    for summary in _all_guilds():
+        gid = str(summary["id"])
+        members = int(summary.get("member_count") or 0)
+        level = level_for(members, thresholds)
+        before = int(best.get(gid, 0))
+        if keep_best:
+            level = max(level, before)
+        guild = (admin("GET", f"/guilds/{gid}") or {}).get("guild") or {}
+        features = set(guild.get("features") or summary.get("features") or [])
+        badges = {str(b) for b in (guild.get("badge_ids") or [])}
+        mine = set(given.get(gid, []))
+        add, remove, new_badges = plan_level_change(level, features, badges, mine, level_badges)
+        if add or remove:
+            admin("PATCH", f"/guilds/{gid}", {"add_features": sorted(add), "remove_features": sorted(remove)},
+                  reason=f"caretaker: server level {level}")
+        if new_badges is not None:
+            admin("PATCH", f"/guilds/{gid}", {"badge_ids": new_badges}, reason=f"caretaker: server level {level}")
+        given[gid] = sorted((mine - remove) | (add & perks_for(level)))
+        name = summary.get("name", gid)
+        if level > before:
+            _name, title = LEVELS[level - 1][0], LEVELS[level - 1][1]
+            text = (f"Your community **{name}** reached {title} with {members} members! "
+                    f"It unlocked {LEVEL_PERK_TEXT[level]}.")
+            if summary.get("owner_id"):
+                try:
+                    admin("POST", "/system-dms", {"user_ids": [str(summary["owner_id"])], "content": text},
+                          reason="caretaker: level up")
+                except SystemExit as err:
+                    print(f"{name}: couldn't DM the owner ({err})")
+            notify("Server levelled up", f"{name} reached {title} ({members} members).")
+        elif level < before:
+            notify("Server level dropped", f"{name} went down to level {level} ({members} members).")
+        if add or remove or new_badges is not None or level != before:
+            changed += 1
+            print(f"{name}: {members} members, level {level}")
+        if level:
+            best[gid] = level
+        else:
+            best.pop(gid, None)
+    state["perks"] = {k: v for k, v in given.items() if v}
+    save_state("levels", state)
+    print(f"Server levels checked, {changed} community(ies) changed.")
+
+
 def cmd_test_notify(_: argparse.Namespace) -> None:
     notify("Caretaker test", f"Notifications from {CFG.get('FLUXER_URL', 'your server')} work.")
 
@@ -480,6 +616,8 @@ def main() -> None:
         "health": cmd_health,
         "badges-setup": cmd_badges_setup,
         "badges": cmd_badges,
+        "levels-setup": cmd_levels_setup,
+        "levels": cmd_levels,
         "test-notify": cmd_test_notify,
     }.items():
         sub.add_parser(name).set_defaults(func=fn)

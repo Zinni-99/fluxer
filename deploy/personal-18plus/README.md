@@ -122,6 +122,30 @@ The rules:
 You can still give any badge by hand in the admin panel (open the user, Badges tab).
 The bot never takes away a badge it didn't give.
 
+## Server levels
+
+Communities level up from how many members they have instead of from boosts. The caretaker checks every 15 minutes and unlocks perks that would normally need boosts:
+
+| Level | Members (default) | Unlocks |
+|---|---|---|
+| 🕯️ 1 Porch Light | 10 | Better voice (128 kbps), more emoji slots |
+| 🏡 2 Cozy Cottage | 25 | 256 kbps voice, more sticker slots |
+| 🌙 3 Moonlit Garden | 50 | 384 kbps voice, unlimited emoji and stickers, custom invite link |
+
+Each community also gets a level badge next to its name ([`branding/levels/`](branding/levels/)). On every level-up the owner gets a system DM and you get an alert. A community keeps its best level if people leave, unless you set `GUILD_LEVELS_KEEP=false`. Animated icons and banners are already free for everyone.
+
+To turn it on for an existing install:
+1. In `/admin`, **Admin API Keys**, give your key these extra permissions: `guild:update:features`, `guild:update:badges`, `system_dm:send` (plus `guild:lookup`, `badge:list` and `badge:create` if you skipped the badge bot).
+2. Add the settings and re-run the installer:
+   ```sh
+   cd ~/fluxer && git pull
+   printf 'GUILD_LEVELS=10,25,50\nGUILD_LEVELS_KEEP=true\n' | sudo tee -a /etc/fluxer-caretaker.env
+   cd deploy/personal-18plus && sudo sh install-bots.sh
+   ```
+3. Check it: `sudo python3 /opt/fluxer-caretaker/caretaker.py levels` should end with "Server levels checked".
+
+Change the numbers any time by editing `GUILD_LEVELS` in `/etc/fluxer-caretaker.env`. Perks the bot didn't give (ones you switched on yourself in `/admin`) are never taken away.
+
 ## Moving from Z's Place to Porchlite
 
 If you already installed under zsplace.site, these steps switch everything over. If you haven't installed yet, just use `porchlite.xyz` in step 4 above and skip this.
@@ -168,5 +192,6 @@ The site theme is `branding/porchlite-theme.css`. It recolours all of Fluxer's c
 | `caretaker/offsite-backup.sh` | Daily copy of backups to cloud storage with rclone |
 | `branding/porchlite-theme.css` | Site theme (custom CSS) applied by `apply-settings` |
 | `branding/badges/` | Profile badge images used by the badge bot |
+| `branding/levels/` | Server-level badge images (Porch Light, Cozy Cottage, Moonlit Garden) |
 | `systemd/` | Timers that run the bots |
 | `legal/` | Rules, terms and privacy templates |
