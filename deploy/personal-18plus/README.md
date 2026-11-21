@@ -139,7 +139,7 @@ If you already installed under zsplace.site, these steps switch everything over.
 4. **Update the bot settings** to the new name, address and colour:
    ```sh
    sudo sed -i -e 's#zsplace.site#porchlite.xyz#g' -e "s#Z's Place#Porchlite#g" \
-     -e 's#^BRAND_COLOR=.*#BRAND_COLOR=\#E9A35C#' /etc/fluxer-caretaker.env
+     -e 's#^BRAND_COLOR=.*#BRAND_COLOR=\#D9A95B#' /etc/fluxer-caretaker.env
    ```
 5. **Apply the look:** this sets the name, amber colour, lantern logo and icon, the Porchlite site theme and the badges.
    ```sh
@@ -148,14 +148,14 @@ If you already installed under zsplace.site, these steps switch everything over.
 6. **Sign-in background (optional):** in `https://porchlite.xyz/admin`, open **Branding** and upload `branding/porchlite-backdrop.jpg` as the sign-in backdrop.
 7. **Old address:** keep `zsplace.site` pointing at the server until people have moved over, or let it lapse.
 
-**Softer colours (Nov 2026):** the theme was toned down a little to be easier on the eyes (amber `#E9A35C` instead of `#FFA53D`, creamier text, calmer purples). If you installed before this, run:
+**Cottage theme (Nov 2026):** Porchlite now has a cottagecore look: "dusk garden" in Dark mode and "morning cottage" in Light mode, with honey `#D9A95B` as the brand colour. Members can still choose their own theme in Appearance. If you installed before this, run:
 ```sh
 cd ~/fluxer && git pull
-sudo sed -i 's/^BRAND_COLOR=.*/BRAND_COLOR=#E9A35C/' /etc/fluxer-caretaker.env
+sudo sed -i 's/^BRAND_COLOR=.*/BRAND_COLOR=#D9A95B/' /etc/fluxer-caretaker.env
 cd deploy/personal-18plus && sudo sh install-bots.sh
 ```
 
-The site theme is `branding/porchlite-theme.css`. It recolours Fluxer's dark theme (members on light mode keep the stock light theme). To change it, edit that file and run `sudo sh install-bots.sh` again; to remove it, delete `/opt/fluxer-caretaker/theme.css` and clear the **Custom CSS** box in `/admin` Branding.
+The site theme is `branding/porchlite-theme.css`. It recolours Fluxer's dark and light themes (Coal stays stock). To change it, edit that file and run `sudo sh install-bots.sh` again; to remove it, delete `/opt/fluxer-caretaker/theme.css` and clear the **Custom CSS** box in `/admin` Branding.
 
 ## Files here
 

@@ -47,7 +47,7 @@ if [ -f "$here/branding/porchlite-logo-512.png" ]; then
 	echo "==> Applying the logo, icon and colour"
 	rexctl branding set \
 		--name "${INSTANCE_NAME:-Porchlite}" \
-		--colour "${BRAND_COLOR:-#E9A35C}" \
+		--colour "${BRAND_COLOR:-#D9A95B}" \
 		--logo "$here/branding/porchlite-logo-512.png" \
 		--icon "$here/branding/porchlite-favicon-512.png" || echo "Branding failed; you can upload it in /admin instead."
 fi
