@@ -146,6 +146,27 @@ To turn it on for an existing install:
 
 Change the numbers any time by editing `GUILD_LEVELS` in `/etc/fluxer-caretaker.env`. Perks the bot didn't give (ones you switched on yourself in `/admin`) are never taken away.
 
+## Hub community
+
+Porchlite can drop every new member into one shared community (the hub), so nobody lands in an empty app. Once someone is approved, the caretaker adds them to the hub within five minutes. Each person is added once: if they leave or you ban them from the hub, they are never pulled back in.
+
+Because the whole instance is 18+ and approval-only, communities made here don't need age gating of their own. Anyone approved can create a community (in `/admin`, **Instance Config**, "Who can create communities" is set to Everyone by default).
+
+To turn it on:
+1. In `/admin`, **Admin API Keys**, create a new key with the permissions you already use plus `guild:force_add_member`, `guild:lookup` and `guild:list:members`. Put it in `/etc/fluxer-caretaker.env` as `FLUXER_ADMIN_API_KEY`, then revoke the old key.
+2. Add the hub's ID and re-run the installer:
+   ```sh
+   cd ~/fluxer && git pull
+   echo 'HUB_GUILD_ID=your-hub-id' | sudo tee -a /etc/fluxer-caretaker.env
+   cd deploy/personal-18plus && sudo sh install-bots.sh
+   ```
+   The first run only notes who already has an account; from then on, new members are added.
+3. To also add everyone who already has an account, run this once:
+   ```sh
+   sudo python3 /opt/fluxer-caretaker/caretaker.py hub-backfill
+   ```
+   Run it soon after making the hub. It can't see bans made before the hub was switched on, so someone banned from the hub before then would be added back.
+
 ## Moving from Z's Place to Porchlite
 
 If you already installed under zsplace.site, these steps switch everything over. If you haven't installed yet, just use `porchlite.xyz` in step 4 above and skip this.
