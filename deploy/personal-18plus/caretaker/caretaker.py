@@ -14,6 +14,8 @@ server with no pip installs. Settings come from /etc/fluxer-caretaker.env
   badges          Hand out and take back badges automatically (see BADGE_* settings).
   levels-setup    Upload the three server-level badges (safe to re-run).
   levels          Level up communities by member count instead of boosts.
+  hub             Add new members to the hub community (HUB_GUILD_ID), once each.
+  hub-backfill    One-off: add everyone who already has an account to the hub.
   test-notify     Send a test notification.
   alert           Send a custom notification.
 
@@ -593,6 +595,108 @@ def cmd_levels(_: argparse.Namespace) -> None:
     print(f"Server levels checked, {changed} community(ies) changed.")
 
 
+# --------------------------------------------------------------------------- hub
+
+# Account flags that mean the account is gone or switched off.
+GONE_FLAGS = (1 << 34) | (1 << 36) | (1 << 38)  # DELETED, SELF_DELETED, DISABLED
+
+
+def hub_status(user: dict) -> str:
+    """'ok' to add now, 'wait' to look again later, 'never' to skip for good."""
+    traits = set(user.get("traits") or [])
+    if user.get("bot") or user.get("system"):
+        return "never"
+    if "registration_rejected" in traits or user.get("pending_deletion_at"):
+        return "never"
+    if int(user.get("flags") or 0) & GONE_FLAGS:
+        return "never"
+    if "registration_pending_approval" in traits or user.get("temp_banned_until"):
+        return "wait"
+    return "ok"
+
+
+def _all_users() -> list[dict]:
+    users: list[dict] = []
+    offset = 0
+    while True:
+        page = (admin("GET", f"/users?limit=200&offset={offset}") or {}).get("users", [])
+        users.extend(page)
+        if len(page) < 200:
+            return users
+        offset += 200
+
+
+def hub_add(hub: str, user: dict) -> bool:
+    try:
+        admin("PUT", f"/guilds/{hub}/members/{user['id']}", reason="caretaker: hub auto-join")
+    except SystemExit as err:
+        print(err)
+        return False
+    print(f"Added {user.get('username')}#{user.get('discriminator')} to the hub")
+    return True
+
+
+def plan_hub(users: list[dict], members: set[str], handled: set[str]) -> tuple[list[dict], set[str]]:
+    """Who to add now, and which ids to remember as handled.
+
+    Each person is only ever added once. Anyone in `handled` is skipped, so
+    someone who leaves the hub or is banned from it is never pulled back in.
+    """
+    to_add: list[dict] = []
+    done: set[str] = set()
+    for user in users:
+        uid = str(user.get("id", ""))
+        if not uid or uid in handled:
+            continue
+        if uid in members:
+            done.add(uid)
+            continue
+        status = hub_status(user)
+        if status == "never":
+            done.add(uid)
+        elif status == "ok":
+            to_add.append(user)
+    return to_add, done
+
+
+def _hub_run(backfill: bool) -> None:
+    hub = cfg("HUB_GUILD_ID")
+    state = load_state("hub")
+    handled = set(state.get("handled", []))   # added, already a member, or never eligible
+    existing = set(state.get("existing", []))  # had an account when the hub was switched on
+    users = _all_users()
+    members = {str((m.get("user") or {}).get("id", "")) for m in _guild_members(hub)}
+
+    if not state.get("started") and not backfill:
+        # Switching the hub on: start with the people who sign up from now on.
+        existing = {str(u.get("id")) for u in users if u.get("id")} - members
+        handled |= members
+        print(f"Hub switched on. {len(existing)} existing accounts left as they are "
+              f"(run hub-backfill to add them too).")
+    else:
+        skip = handled if backfill else handled | existing
+        to_add, done = plan_hub(users, members, skip)
+        handled |= done
+        added = 0
+        for user in to_add:
+            if hub_add(hub, user):
+                handled.add(str(user["id"]))
+                added += 1
+        if backfill:
+            existing = set()
+        if added:
+            notify("Hub", f"Added {added} {'person' if added == 1 else 'people'} to the hub community.")
+    save_state("hub", {"started": True, "handled": sorted(handled), "existing": sorted(existing - handled)})
+
+
+def cmd_hub(_: argparse.Namespace) -> None:
+    _hub_run(backfill=False)
+
+
+def cmd_hub_backfill(_: argparse.Namespace) -> None:
+    _hub_run(backfill=True)
+
+
 def cmd_test_notify(_: argparse.Namespace) -> None:
     notify("Caretaker test", f"Notifications from {CFG.get('FLUXER_URL', 'your server')} work.")
 
@@ -618,6 +722,8 @@ def main() -> None:
         "badges": cmd_badges,
         "levels-setup": cmd_levels_setup,
         "levels": cmd_levels,
+        "hub": cmd_hub,
+        "hub-backfill": cmd_hub_backfill,
         "test-notify": cmd_test_notify,
     }.items():
         sub.add_parser(name).set_defaults(func=fn)

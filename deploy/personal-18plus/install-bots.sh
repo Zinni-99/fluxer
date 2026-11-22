@@ -75,6 +75,14 @@ else
 	echo "==> Server levels skipped (GUILD_LEVELS is empty)"
 fi
 
+if [ -n "${HUB_GUILD_ID:-}" ]; then
+	echo "==> Starting hub auto-join (new members join community $HUB_GUILD_ID)"
+	python3 /opt/fluxer-caretaker/caretaker.py hub || echo "Hub check failed; check the API key permissions."
+	systemctl enable --now fluxer-caretaker-hub.timer
+else
+	echo "==> Hub auto-join skipped (HUB_GUILD_ID is empty)"
+fi
+
 echo "==> Weekly automatic upgrades (Sunday 04:00), each with a backup first,"
 echo "    plus a full backup with uploads on the 1st of every month"
 if [ -n "${NOTIFY_URL:-}" ]; then
