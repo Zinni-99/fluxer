@@ -167,6 +167,30 @@ To turn it on:
    ```
    Run it soon after making the hub. It can't see bans made before the hub was switched on, so someone banned from the hub before then would be added back.
 
+## Terms, privacy and rules website
+
+[`legal/build.py`](legal/build.py) turns `legal/TERMS.md`, `PRIVACY.md` and `RULES.md` into a small Porchlite-styled website (in [`legal/site/`](legal/site/)), with light and dark modes. Cloudflare Pages hosts it for free at `legal.porchlite.xyz` and rebuilds it every time the Markdown changes on GitHub.
+
+These pages are a starting point, not legal advice. Laws about adult content and age checks differ by country and US state, so have them checked before you open Porchlite to the public.
+
+**Set up Cloudflare Pages (once):**
+1. In the Cloudflare dashboard, open **Workers & Pages**, then **Create**, choose **Pages**, then **Import an existing Git repository** (connect GitHub if it asks).
+2. Pick the `fluxer` repository and fill in:
+   - Production branch: `main`
+   - Framework preset: `None`
+   - Build command: `python3 deploy/personal-18plus/legal/build.py`
+   - Build output directory: `deploy/personal-18plus/legal/site`
+3. **Save and Deploy**. When it finishes, open the project's **Custom domains** tab, add `legal.porchlite.xyz`, and accept the DNS record Cloudflare offers.
+4. Point the sign-up page at it:
+   ```sh
+   sudo sed -i 's#^LEGAL_BASE_URL=.*#LEGAL_BASE_URL=https://legal.porchlite.xyz#' /etc/fluxer-caretaker.env
+   cd ~/fluxer && git pull && sudo install -m 0755 deploy/personal-18plus/caretaker/caretaker.py /opt/fluxer-caretaker/caretaker.py
+   sudo python3 /opt/fluxer-caretaker/caretaker.py apply-settings
+   ```
+5. **Contact address:** the pages give `admin@porchlite.xyz`. To receive it for free, open **Email**, then **Email Routing**, in Cloudflare for porchlite.xyz, turn it on, and forward `admin@` to your own inbox.
+
+To change the wording later, edit the Markdown files and push to `main`; the site updates within a minute or two.
+
 ## Moving from Z's Place to Porchlite
 
 If you already installed under zsplace.site, these steps switch everything over. If you haven't installed yet, just use `porchlite.xyz` in step 4 above and skip this.

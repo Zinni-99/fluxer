@@ -1,10 +1,8 @@
 # Porchlite: terms of use
 
-_Last updated: <!-- DATE -->_
+_Last updated: 22 November 2026_
 
-These terms apply to **Porchlite**, the private chat server at **porchlite.xyz** ("the server"), run by **<!-- YOUR NAME OR HANDLE -->** ("we", "the admins").
-
-> This template is a starting point, not legal advice. Laws about adult content and age checks differ by country and US state. Have it checked if you open the server to the public.
+These terms apply to **Porchlite**, the private chat server at **porchlite.xyz** ("the server"), run by **the Porchlite admins** ("we", "the admins").
 
 ## Who can use the server
 - You must be at least 18 years old, and at least the age of majority where you live.
@@ -17,7 +15,7 @@ The server can contain sexually explicit material between consenting adults. By 
 ## Your content
 - You keep ownership of what you post, and you let us store and show it to other members so the server works.
 - You confirm you have the right to post it, and that every identifiable person in explicit content is an adult who agreed to it being shared here.
-- You follow the [community rules](RULES.md).
+- You follow the [community rules](rules).
 
 ## What we do about problems
 - We remove content and accounts that break the rules or the law.
@@ -31,4 +29,4 @@ This is a personal, hobby server. It's provided as is, without uptime or data-lo
 You can delete your account at any time in your settings. We can end your access if you break these terms.
 
 ## Contact
-<!-- an email address for the admins, e.g. admin@your-domain -->
+Email the admins at **admin@porchlite.xyz**, or use the report button in the app.
