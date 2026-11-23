@@ -1,8 +1,8 @@
 # Porchlite: privacy notice
 
-_Last updated: <!-- DATE -->_
+_Last updated: 22 November 2026_
 
-Porchlite (**porchlite.xyz**) is run privately by **<!-- YOUR NAME OR HANDLE -->**. It runs Fluxer, open-source software, on a server we rent. No advertising, no tracking, and we don't sell data.
+Porchlite (**porchlite.xyz**) is run privately by **the Porchlite admins**. It runs Fluxer, open-source software, on a server we rent. No advertising, no tracking, and we don't sell data.
 
 ## What we store
 - **Account details:** username, email address, password (stored scrambled, never in plain text) and date of birth. The date of birth is only used to check that you're 18 or older.
@@ -16,10 +16,10 @@ Porchlite (**porchlite.xyz**) is run privately by **<!-- YOUR NAME OR HANDLE -->
 - We share data with authorities only when the law requires it, or to report child sexual abuse material.
 
 ## Where it's kept
-On our server at <!-- HOSTING PROVIDER, COUNTRY -->, and in encrypted backups at <!-- BACKUP PROVIDER --> for up to <!-- 30 --> days.
+On our server at Contabo (United States), and in backups that we keep for up to 30 days.
 
 ## Your choices
-You can edit or delete your messages, download your data and delete your account in your settings. Deleted data leaves our backups within <!-- 30 --> days.
+You can edit or delete your messages, download your data and delete your account in your settings. Deleted data leaves our backups within 30 days.
 
 ## Contact
-<!-- admin email -->
+Email the admins at **admin@porchlite.xyz**.

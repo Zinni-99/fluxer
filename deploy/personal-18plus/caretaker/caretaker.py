@@ -173,10 +173,22 @@ def age_on(dob: str, today: dt.date) -> int | None:
 # --------------------------------------------------------------------------- commands
 
 
+def legal_pages(base: str) -> dict[str, str]:
+    """Links to the terms, privacy notice and rules under LEGAL_BASE_URL.
+
+    On GitHub they are the Markdown files; anywhere else (such as the
+    Cloudflare Pages site built by legal/build.py) they are /terms, /privacy, /rules.
+    """
+    if "github.com" in base:
+        return {k: f"{base}/{k.upper()}.md" for k in ("terms", "privacy", "rules")}
+    return {k: f"{base}/{k}" for k in ("terms", "privacy", "rules")}
+
+
 def cmd_apply_settings(_: argparse.Namespace) -> None:
     """Turn on the adults-only defaults. Safe to run again at any time."""
     product = CFG.get("INSTANCE_NAME", "")
     legal_base = CFG.get("LEGAL_BASE_URL", "").rstrip("/")
+    legal = legal_pages(legal_base)
     patch: dict = {
         # Everyone must give a date of birth; accounts without one can't do much.
         "accounts": {"date_of_birth": "require_all", "interaction_tier": "enforced"},
@@ -190,7 +202,7 @@ def cmd_apply_settings(_: argparse.Namespace) -> None:
                 "NOTICE_MESSAGE",
                 "18+ only. By using this server you confirm you are an adult and accept the rules.",
             ),
-            "url": f"{legal_base}/RULES.md" if legal_base else None,
+            "url": legal["rules"] if legal_base else None,
         },
     }
     branding: dict = {}
@@ -205,9 +217,9 @@ def cmd_apply_settings(_: argparse.Namespace) -> None:
         patch["app_public"]["branding"] = branding
     if legal_base:
         patch["app_public"]["legal"] = {
-            "terms_url": f"{legal_base}/TERMS.md",
-            "privacy_url": f"{legal_base}/PRIVACY.md",
-            "guidelines_url": f"{legal_base}/RULES.md",
+            "terms_url": legal["terms"],
+            "privacy_url": legal["privacy"],
+            "guidelines_url": legal["rules"],
         }
     if not patch["notice"]["url"]:
         patch["notice"].pop("url")
